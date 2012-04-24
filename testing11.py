@@ -262,6 +262,7 @@ class DormRoom(Room):
 class Furniture:
     def __init__(self, Room, Width, Length, Height, Position = []):
         Room.Display.select()
+        self.Container = frame(display = Room.Display)
         self.Width = Width
         self.Length = Length
         self.Height = Height
@@ -328,8 +329,7 @@ class Furniture:
             Distance = Turn_End.x - Turn_Start.x
             Turn_Start = Turn_End
             Spin = math.pi*(Distance/((self.Width+self.Length)))
-            for part in self.ObjectList:
-                part.rotate(angle = Spin, axis = (0,0,1), origin = self.ObjectList[0].pos)
+            self.Container.rotate(angle = Spin, axis = (0,0,1), origin = self.ObjectList[0].pos)
         self.DragSettings = (drag, New_Pos, Drag_Pos, turn, Turn_Start, Turn_End, m1)
         
     def Snap_To_Grid(self, scene):
@@ -351,7 +351,8 @@ class Refrigerator(Furniture):
         fridgedata = materials.loadTGA("fridge")
         fridgetex = materials.texture(data = fridgedata, mapping="sign")
         Furniture.__init__(self, Room, Width, Length, Height, Position)
-        self.Body = box(axis=(0,1,0), pos = (self.Pos), size = (self.Length, self. Width, self.Height), material = fridgetex, color = (.05, .05, .05))
+        self.Body = box(axis=(0,1,0), pos = (self.Pos), size = (self.Length, self. Width, self.Height),
+                        material = fridgetex, color = (.05, .05, .05), frame = self.Container)
         self.ObjectList = [self.Body]
 
 class Bed(Furniture):
@@ -364,14 +365,21 @@ class Bed(Furniture):
         self.Wood_Thickness = Wood_Thickness
         self.Wood_Color = Wood_Color
         self.Mattress = box(pos = (self.Pos), size = (self.Width, self.Length, self.Mattress_Thickness), \
-                         color = self.Sheet_Color)
-        self.Head_Pos = self.Pos+vector(0, self.Length/2., self.Back_Height/2.- self.Height)
-        self.Foot_Pos = self.Pos+vector(0, -self.Length/2., self.Back_Height/2.- self.Height)
-        self.HeadBoard = box(pos = self.Head_Pos, size = (self.Width, self.Wood_Thickness, self.Back_Height),\
-                             color = self.Wood_Color, material = materials.wood)
-        self.FootBoard = box(pos = self.Foot_Pos, size = (self.Width, self.Wood_Thickness, self.Back_Height),\
-                             color = self.Wood_Color, material = materials.wood)        
-        self.ObjectList = [self.Mattress, self.HeadBoard, self. FootBoard]
+                         color = self.Sheet_Color, frame = self.Container)
+        self.Head_Start = self.Pos+vector(0, self.Length/2.+self.Wood_Thickness/2., self.Back_Height/2.- self.Height)
+        self.Head_End = self.Pos+vector(0, self.Length/2.-self.Wood_Thickness/2., self.Back_Height/2.- self.Height)
+        self.Foot_Start = self.Pos+vector(0, -self.Length/2.+self.Wood_Thickness/2., self.Back_Height/2.- self.Height)
+        self.Foot_End = self.Pos+vector(0, -self.Length/2.-self.Wood_Thickness/2., self.Back_Height/2.- self.Height)
+        self.Head_Shape = shapes.rectangle(height = self.Back_Height+2*self.Mattress_Thickness, width = self.Width) & \
+                          shapes.circle(radius = self.Back_Height+self.Mattress_Thickness,
+                                        pos = (0, -(self.Back_Height+self.Mattress_Thickness)/2.), np = 64)
+        self.HeadBoard = extrusion(pos = [(self.Head_Start),(self.Head_End)],
+                                   shape = self.Head_Shape, frame = self.Container,
+                                   color = self.Wood_Color, material = materials.wood)
+        self.FootBoard = extrusion(pos = [(self.Foot_Start),(self.Foot_End)],
+                                   shape = self.Head_Shape, frame = self.Container,
+                                   color = self.Wood_Color, material = materials.wood)
+        self.ObjectList = [self.Mattress, self.HeadBoard, self.FootBoard]
 
 class BookShelf(Furniture):
     def __init__(self, Room, Width = 2.5, Length=1.25, Height=2.25, Shelf_Number=2, Wood_Thickness = 0.0583,\
@@ -387,26 +395,26 @@ class BookShelf(Furniture):
         self.Back_Pos = self.Pos + vector(0, Length, Height/2.)
         self.Backing = box(pos = self.Back_Pos, size = (self.Width,\
                        self.Wood_Thickness, self.Height), color = self.Wood_Color,\
-                       material = materials.wood)
+                       material = materials.wood, frame = self.Container)
         self.Left_Pos = self.Pos + vector(Width/2., Length/2., Height/2.)
         self.Right_Pos = self.Pos + vector(-Width/2., Length/2., Height/2.)
         self.Left_Wall = box(pos = self.Left_Pos, size = (self.Wood_Thickness, \
                          self.Length, self.Height), color = self.Wood_Color,\
-                         material = materials.wood)
+                         material = materials.wood, frame = self.Container)
         self.Right_Wall = box(pos = self.Right_Pos, size = (self.Wood_Thickness, \
                          self.Length, self.Height), color = self.Wood_Color,\
-                         material = materials.wood)
+                         material = materials.wood, frame = self.Container)
         self.Bottom = box(pos = self.Pos + vector(0, Length/2.,\
                                     0), size = (self.Width, \
                                     self.Length, self.Wood_Thickness*2.5), color = self.Wood_Color,\
-                                    material = materials.wood)
+                                    material = materials.wood, frame = self.Container)
         self.ObjectList = [self.Backing, self.Left_Wall, self.Bottom,self.Right_Wall]
         self.Shelf_Increment = self.Height/float(self.Shelf_Number)
         for step in range(0,Shelf_Number):
             self.ObjectList.append(box(pos = self.Pos + vector(0, Length/2.,\
                                     (step+1)*(self.Shelf_Increment)), size = (self.Width, \
                                     self.Length, self.Wood_Thickness*2.5), color = self.Wood_Color,\
-                                    material = materials.wood))
+                                    material = materials.wood, frame = self.Container))
 
 
 class Closet(BookShelf):
@@ -422,7 +430,7 @@ class Closet(BookShelf):
             self.Hanger_Height = Hanger_Height
         self.Top_Pos = vector(0, Length/2., self.Height)
         self.Top = box(pos = self.Top_Pos, size = (self.Width, self.Length, self.Wood_Thickness),
-                       color = self.Wood_Color, material = materials.wood)
+                       color = self.Wood_Color, material = materials.wood, frame = self.Container)
         if not self.Open:
             self.Left_Front_Pos = (self.Width/4., 0, self.Height/2.)
             self.Right_Front_Pos = (-self.Width/4., 0, self.Height/2.)
@@ -433,30 +441,23 @@ class Closet(BookShelf):
             self.Front_Size = (self.Wood_Thickness, self.Width/2., self.Height)
             
         self.Left_Front = box(pos= self.Left_Front_Pos, size = self.Front_Size,
-                              color = self.Wood_Color, material = materials.wood)
+                              color = self.Wood_Color, material = materials.wood,
+                              frame = self.Container)
         self.Right_Front = box(pos = self.Right_Front_Pos, size= self.Front_Size,
-                               color = self.Wood_Color, material = materials.wood)
+                               color = self.Wood_Color, material = materials.wood,
+                               frame = self.Container)
         self.Hanger_Bar = cylinder(pos = (self.Right_Pos.x, self.Right_Pos.y, self.Hanger_Height),\
                                    axis = (self.Width, 0, 0), radius = self.Hanger_Radius, \
-                                   color = self.Wood_Color, material = materials.wood)
+                                   color = self.Wood_Color, material = materials.wood,
+                                   frame = self.Container)
         self.Shelf = box(pos = vector(0, Length/2., .9), size = (self.Width, self.Length, self.Wood_Thickness),
-                       color = self.Wood_Color, material = materials.wood)
+                       color = self.Wood_Color, material = materials.wood,
+                         frame = self.Container)
         self.ObjectList.append(self.Top)
         self.ObjectList.append(self.Shelf)
         self.ObjectList.append(self.Left_Front)
         self.ObjectList.append(self.Right_Front)
         self.ObjectList.append(self.Hanger_Bar)
-
-    '''def spread(self, scene):
-        clicked = False
-        if scene.mouse.events: #If something with the mouse happens
-            m1 = scene.mouse.getevent() #Figure out what happened
-            if m1.press  and m1.ctrl: #If mousebutton is pressed and alt is not
-                for part in self.ObjectList:
-                    clicked = (m1.pick == part) or clicked
-            if clicked:
-                self.Open = not self.Open
-                clicked = False'''
 
 class Lamp(Furniture):
     def __init__(self, Room, Height=5, Base_Radius=.75, Base_Height=.1, Shade_Max_Radius=.6, Shade_Min_Radius=.2,
@@ -474,15 +475,16 @@ class Lamp(Furniture):
             self.Shade_Base = Shade_Base
         self.Shade_Thickness = Shade_Thickness
         self.Stand = cylinder(pos = self.Pos, axis = (0, 0, -self.Height), radius = self.Stand_Radius,\
-                              material = materials.chrome)
+                              material = materials.chrome, frame = self.Container)
         self.Shade_Scale = float(self.Shade_Min_Radius)/self.Shade_Max_Radius
         self.Shade_Shape = shapes.circle(radius = self.Shade_Max_Radius, np = 50,
                                          thickness = self.Shade_Thickness)
         self.shadepos = [(0, 0, self.Shade_Base), (0, 0, self.Shade_Base+self.Shade_Height)]
         self.Lamp_Shade = extrusion(pos = self.shadepos, \
                                     shape = self.Shade_Shape, color = (255,0,0), material = materials.shiny,
-                                    scale = [(1.0, 1.0), (self.Shade_Scale, self.Shade_Scale)] )
-        self.Light = local_light(pos=(0,0,(2*self.Shade_Base+self.Shade_Scale)/2.), color=(.1,.1,.1))
+                                    scale = [(1.0, 1.0), (self.Shade_Scale, self.Shade_Scale)], frame = self.Container )
+        self.Light = local_light(pos=(0,0,(2*self.Shade_Base+self.Shade_Scale)/2.), color=(.1,.1,.1),
+                                 frame = self.Container)
         self.Radius_of_Circle = Base_Height*5. #Radius of the arc to make the cross section, should be
                                                #Calculated in a more rigorous way.
         self.Base_Circle = shapes.circle(pos = (-self.Base_Radius/2., -self.Radius_of_Circle + (self.Base_Height/2.)),\
@@ -490,16 +492,18 @@ class Lamp(Furniture):
         self.Base_Rectangle = shapes.rectangle(width = self.Base_Radius, height = self.Base_Height)
         self.Base_Shape =self.Base_Circle&self.Base_Rectangle
         self.Base = extrusion(pos = paths.circle(up = (0,0,1), radius = self.Base_Radius/2., np = 50),
-                              shape = self.Base_Shape, material = materials.wood)
+                              shape = self.Base_Shape, material = materials.wood, frame = self.Container)
         self.Shade_Cylinder = cylinder(pos = (0,0,self.Shade_Base), axis = (0,0,self.Shade_Height),
-                                       radius  = self.Shade_Max_Radius, opacity = 0)
+                                       radius  = self.Shade_Max_Radius, opacity = 0, frame = self.Container)
         self.Base_Cylinder = cylinder(pos = (0,0,0), axis = (0,0, self.Base_Height),
-                                      radius = self.Base_Radius, opacity = 0)
+                                      radius = self.Base_Radius, opacity = 0, frame = self.Container)
         self.ObjectList = [self.Stand, self.Lamp_Shade, self.Base, self.Light, self.Base_Cylinder, self.Shade_Cylinder]
 
  
 class Handle(Furniture):
-    def __init__(self, Room, Length=.5, Handle_Orientation = (0,0,1),Clearance = 3./12, Handle_Radius = 0.5/12,
+    #Can only be added to other objects, doesn't really do anything by itself.
+    #Furniture_Base is the object that this will be added to.
+    def __init__(self, Room, Furniture_Base, Length=.5, Handle_Orientation = (0,0,1),Clearance = 3./12, Handle_Radius = 0.5/12,
                  Strut_Radius = 0.5/12, Strut_Orientation = (0,1,0), Position = []):
         Furniture.__init__(self, Room, 1, Length, 1, Position)
         self.Handle_Orientation = Handle_Orientation
@@ -507,6 +511,7 @@ class Handle(Furniture):
         self.Clearance = Clearance
         self.Handle_Radius = Handle_Radius
         self.Strut_Radius = Strut_Radius
+        #I'm not sure why all of these are empty vectors, will ask Diana
         self.Clearance_Offset = vector(0,0,0)
         self.Strut_Axis = vector(0,0,0)
         self.Main_Axis = vector(0,0,0)
@@ -519,12 +524,13 @@ class Handle(Furniture):
                 self.Main_Axis[i] = self.Handle_Orientation[i]*self.Length
                 self.Handle_Pos[i] = (-self.Length/2.*self.Handle_Orientation[i])
         self.Handle = cylinder(pos = self.Handle_Pos, axis = self.Main_Axis, radius = self.Handle_Radius,
-                               material = materials.wood)
+                               material = materials.wood, frame = Furniture_Base.Container)
         self.Strut1 = cylinder(pos = self.Handle_Pos, axis = self.Strut_Axis, radius = self.Strut_Radius,
-                               material = materials.wood)
+                               material = materials.wood, frame = Furniture_Base.Container)
         self.Strut2 = cylinder(pos = self.Handle_Pos + self.Main_Axis, axis = self.Strut_Axis,
-                               radius = self.Strut_Radius, material = materials.wood)
-        self.ObjectList = [self.Handle, self.Strut1, self.Strut2]
+                               radius = self.Strut_Radius, material = materials.wood,
+                               frame = Furniture_Base.Container)
+        Furniture_Base.ObjectList = [self.Handle, self.Strut1, self.Strut2]
 
 class Desk(Furniture):
     def __init__(self, Room, Width = 2.5,Length = 5, Height = 2.5, Wood_Thickness = .1, axis = (0,1,0), Position = [], Leg_Radius = 0.12,\
@@ -537,14 +543,15 @@ class Desk(Furniture):
         self.X_Margin = Width/2. #Distance from leg center to edge
         self.Y_Margin = Length/10. #Distance from leg center to edge
         self.CounterTop = box(pos = (self.Pos), axis = (1,0,0), size = (self.Length, self.Width, self.Wood_Thickness), \
-                         color = self.Wood_Color, material = materials.wood)
+                         color = self.Wood_Color, material = materials.wood, frame = self.Container)
         self.DF = .27
         self.DeskDrawers = box(pos = (self.Pos + vector(-self.Length*.5+self.Length*self.DF*.5+self.Length*.04,0,-Height/2.)), axis = (0,-1,0), size = (self.Width*.8,self.Length*self.DF,self.Height), \
-                         color = self.Wood_Color, material = desktex)
+                         color = self.Wood_Color, material = desktex, frame = self.Container)
         
         self.Leg_Height = (self.Height - self.Wood_Thickness/2.)
         self.Leg_Radius = Leg_Radius
-        self.Leg = cylinder(pos = (self.Pos + vector(self.Length*.4, 0, 0)), axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius, color = Leg_Color)
+        self.Leg = cylinder(pos = (self.Pos + vector(self.Length*.4, 0, 0)), axis = (0,0,-self.Leg_Height),
+                            radius = self.Leg_Radius, color = Leg_Color, frame = self.Container)
         self.ObjectList = [self.CounterTop, self.DeskDrawers, self.Leg]
 
 class Poster(Furniture):
@@ -552,7 +559,8 @@ class Poster(Furniture):
         posterdata = materials.loadTGA(posterimage)
         postertex = materials.texture(data = posterdata, mapping="sign")
         Furniture.__init__(self, Room, Width, Length, Height, Position)
-        self.Sheet = box(axis=(1,0,0), pos = (self.Pos), size = (self.Width, self.Length, self.Height), material = postertex, color = (1,1,1))                          
+        self.Sheet = box(axis=(1,0,0), pos = (self.Pos), size = (self.Width, self.Length, self.Height),
+                         material = postertex, color = (1,1,1), frame = self.Container)                          
         self.ObjectList = [self.Sheet]
 
 class Drawers(Furniture):
@@ -560,7 +568,8 @@ class Drawers(Furniture):
         drawersdata = materials.loadTGA("drawers")
         drawerstex = materials.texture(data = drawersdata, mapping="sign")
         Furniture.__init__(self, Room, Width, Length, Height, Position)
-        self.Body = box(axis=(1,0,0), pos = (self.Pos), size = (self.Width, self.Length, self.Height), material = drawerstex, color = (1,.83,.38))                          
+        self.Body = box(axis=(1,0,0), pos = (self.Pos), size = (self.Width, self.Length, self.Height),
+                        material = drawerstex, color = (1,.83,.38), frame = self.Container)                          
         self.ObjectList = [self.Body]
 
 
@@ -575,7 +584,7 @@ class Table(Furniture):
         self.Wood_Color = Wood_Color
         self.Leg_Color = Leg_Color
         self.CounterTop = box(pos = (self.Pos), size = (self.Width, self.Length, self.Wood_Thickness), \
-                         color = self.Wood_Color, material = materials.silver)
+                         color = self.Wood_Color, material = materials.silver, frame = self.Container)
         #Dimensions for the table legs
         self.Leg_Height = (self.Height - self.Wood_Thickness/2.)
         # Indicated side for indicated dimension (Left side, X dimension = Left_X
@@ -585,13 +594,17 @@ class Table(Furniture):
         self.Bottom_Y = self.Pos[1] - (self.Length/2.) + self.Y_Margin
         self.legmaterial = materials.blazed
         self.Leg1 = cylinder(pos = (self.Left_X, self.Top_Y, (self.Pos[2]-(self.Wood_Thickness/2.))), \
-                        axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius, material = self.legmaterial,color = self.Leg_Color)
+                        axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius, material = self.legmaterial,
+                             color = self.Leg_Color, frame = self.Container)
         self.Leg2 = cylinder(pos = (self.Right_X, self.Top_Y, (self.Pos[2]-(self.Wood_Thickness/2.))), \
-                        axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius, material = self.legmaterial,color = self.Leg_Color)
+                        axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius,
+                             material = self.legmaterial,color = self.Leg_Color, frame = self.Container)
         self.Leg3 = cylinder(pos = (self.Left_X, self.Bottom_Y, (self.Pos[2]-(self.Wood_Thickness/2.))), \
-                        axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius, material = self.legmaterial,color = self.Leg_Color)
+                        axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius,
+                             material = self.legmaterial,color = self.Leg_Color, frame = self.Container)
         self.Leg4 = cylinder(pos = (self.Right_X, self.Bottom_Y, (self.Pos[2]-(self.Wood_Thickness/2.))), \
-                        axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius, material = self.legmaterial, color = self.Leg_Color)
+                        axis = (0,0,-self.Leg_Height), radius = self.Leg_Radius, material = self.legmaterial,
+                             color = self.Leg_Color, frame = self.Container)
         self.ObjectList = [self.CounterTop, self.Leg1, self.Leg2, self.Leg3, self.Leg4]
         
 
@@ -614,7 +627,8 @@ class Microwave(Furniture):
         posterdata = materials.loadTGA("microwave")
         postertex = materials.texture(data = posterdata, mapping="sign")
         Furniture.__init__(self, Room, Width, Length, Height, Position)
-        self.Sheet = box(axis=(1,0,0), pos = (self.Pos), size = (self.Width, self.Length, self.Height), material = postertex, color = (.05,.05,.05))                          
+        self.Sheet = box(axis=(1,0,0), pos = (self.Pos), size = (self.Width, self.Length, self.Height),
+                         material = postertex, color = (.05,.05,.05), frame = self.Container)                          
         self.ObjectList = [self.Sheet]
 
 class WallLight(Furniture):
@@ -626,11 +640,15 @@ class WallLight(Furniture):
         self.BorderHeight = Height*.08
         self.cr = shapes.circle(radius=self.Radius, np=64)
         self.hole = Polygon( [(-self.Radius,self.Radius),(self.Radius,self.Radius),(self.Radius,self.Radius/4),(-self.Radius,self.Radius/4.)] )
-        self.Lamp = extrusion(pos=[(0,0,0),(0,0,self.LightHeight)], shape=self.cr-self.hole, color=(1,1,1), material = materials.emissive)
-        self.TopBorder = extrusion(pos=[(0,0,self.LightHeight),(0,0,self.LightHeight+self.BorderHeight)], shape=self.cr-self.hole, color=(0.5, 0.5, 0.5), material = materials.shiny)
-        self.BottomBorder = extrusion(pos=[(0,0,0),(0,0,-self.BorderHeight)], shape=self.cr-self.hole, color=(0.5, 0.5, 0.5), material = materials.shiny)
-        self.Light = local_light(pos=(0,0,self.Height/2.), color=(.5,.5,.5))
-        self.Invis_Cylinder = cylinder(pos = (0,0,0), axis = (0,0, self.Height),  radius  = self.Radius, opacity = 0.5)
+        self.Lamp = extrusion(pos=[(0,0,0),(0,0,self.LightHeight)], shape=self.cr-self.hole, color=(1,1,1),
+                              material = materials.emissive, frame = self.Container)
+        self.TopBorder = extrusion(pos=[(0,0,self.LightHeight),(0,0,self.LightHeight+self.BorderHeight)], shape=self.cr-self.hole,
+                                   color=(0.5, 0.5, 0.5), material = materials.shiny, frame = self.Container)
+        self.BottomBorder = extrusion(pos=[(0,0,0),(0,0,-self.BorderHeight)], shape=self.cr-self.hole, color=(0.5, 0.5, 0.5),
+                                      material = materials.shiny, frame = self.Container)
+        self.Light = local_light(pos=(0,0,self.Height/2.), color=(.5,.5,.5),frame = self.Container)
+        self.Invis_Cylinder = cylinder(pos = (0,0,0), axis = (0,0, self.Height),  radius  = self.Radius,
+                                       opacity = 0.5, frame = self.Container)
         self.ObjectList = [self.Light, self.Lamp, self.BottomBorder, self.TopBorder, self.Invis_Cylinder]
 
 class Olin_Chair(Furniture):
@@ -639,7 +657,7 @@ class Olin_Chair(Furniture):
                  Wheel_Radius = 1.1/12, Wheel_Margin = 0.25/12, Spindle_Bottom_Height = 5.7/12,
                  Spindle_Middle_Height = 1.1/12, Spindle_Top_Height = 5.3/12, Spindle_Bottom_Radius =1.4/12,
                  Spindle_Middle_Radius = 1.1/12, Spindle_Top_Radius = 0.55/12, Position = []):
-        Furniture.__init__(self, 1,1,1, Position)
+        Furniture.__init__(self, Room, 1,1,1, Position)
         self.Number_Of_Legs = Number_Of_Legs
         self.Starting_Leg_Width = Starting_Leg_Width
         self.Ending_Leg_Width = Ending_Leg_Width
@@ -658,29 +676,45 @@ class Olin_Chair(Furniture):
         self.X_Scale = Ending_Leg_Width/Starting_Leg_Width
         self.Y_Scale = Ending_Leg_Height/Starting_Leg_Height
         self.Leg_Angle = (2*math.pi)/self.Number_Of_Legs
+        
+        self.Spindle_Bottom = cylinder(pos = (0,0,0), axis = (0,0,self.Spindle_Bottom_Height),
+                                       radius = self.Spindle_Bottom_Radius,
+                                       material = materials.plastic,
+                                       color = (0.1,0.1,0.1), frame = self.Container)
+        self.Spindle_Middle = cylinder(pos = (0,0,self.Spindle_Bottom_Height),
+                                       axis = (0,0,self.Spindle_Middle_Height),
+                                       radius = self.Spindle_Middle_Radius,
+                                       material = materials.plastic,
+                                       color = (0.1,0.1,0.1), frame = self.Container)
+        self.Spindle_Top = cylinder(pos = (0,0,self.Spindle_Bottom_Height+self.Spindle_Middle_Height),
+                                       axis = (0,0,self.Spindle_Top_Height),
+                                       radius = self.Spindle_Top_Radius,
+                                    material = materials.chrome,
+                                    color = (0.9, 0.9, 0.9), frame = self.Container)
+        
+        self.ObjectList = [self.Spindle_Bottom, self.Spindle_Middle, self.Spindle_Top]
+        
         Leg_Circle = shapes.circle(radius = self.Starting_Leg_Width/2.)
         Leg_Square = shapes.rectangle(width = self.Starting_Leg_Width,
                                       height = self.Starting_Leg_Height)
         self.Leg_Shape = Leg_Circle&Leg_Square
-        self.Legs = []
-        self.Wheel_Housing = []
-        self.Wheels = []
         for i in range(1, self.Number_Of_Legs+1):
             Leg_End_Point = vector(self.Leg_Length*(math.sin(i*self.Leg_Angle)),
                          self.Leg_Length*(math.cos(i*self.Leg_Angle)),0)
-            self.Legs.append(extrusion(pos = [(0,0,0),
+            self.ObjectList.append(extrusion(pos = [(0,0,0),
                                               Leg_End_Point],
                                        shape = self.Leg_Shape,
                                        material = materials.rough,
                                        color = (255,0,255),
                                        xscale = [self.X_Scale, 1],
-                                       yscale = [self.Y_Scale,1]))
-            self.Legs.append(sphere(pos = Leg_End_Point, radius = self.Starting_Leg_Width/2.,
-                                    material = materials.rough, color = (255,0,255)))
+                                       yscale = [self.Y_Scale,1],
+                                       frame = self.Container))
+            self.ObjectList.append(sphere(pos = Leg_End_Point, radius = self.Starting_Leg_Width/2.,
+                                    material = materials.rough, color = (255,0,255),
+                                    frame = self.Container))
             
             Wheel_Housing_Shape = shapes.arc(radius = (self.Wheel_Radius+ self.Wheel_Margin),
-                                             angle1 = 0,
-                                             angle2 = 2*pi)
+                                             angle1 = 0, angle2 = 2*pi)
             
             Wheel_Offset = vector((self.Wheel_Width/2.)*(math.sin((i*self.Leg_Angle)-(math.pi/2))),
                                   (self.Wheel_Width/2.)*(math.cos((i*self.Leg_Angle)-(math.pi/2))),)
@@ -689,28 +723,15 @@ class Olin_Chair(Furniture):
 
             Wheel_Drop = vector(0,0,-self.Starting_Leg_Height - self.Wheel_Margin)
             
-            self.Wheel_Housing.append(extrusion(pos = [(Leg_End_Point-Wheel_Offset+Wheel_Housing_Drop),
+            self.ObjectList.append(extrusion(pos = [(Leg_End_Point-Wheel_Offset+Wheel_Housing_Drop),
                                                        (Leg_End_Point+Wheel_Offset+Wheel_Housing_Drop)],
-                                                shape = Wheel_Housing_Shape))
-            self.Wheels.append(cylinder(pos = (Leg_End_Point-Wheel_Offset+Wheel_Drop-(0.25*Wheel_Offset)),
+                                                shape = Wheel_Housing_Shape, frame = self.Container))
+            self.ObjectList.append(cylinder(pos = (Leg_End_Point-Wheel_Offset+Wheel_Drop-(0.25*Wheel_Offset)),
                                         axis =(2.5*Wheel_Offset),
                                         radius = self.Wheel_Radius+self.Wheel_Margin,
                                         material = materials.wood,
-                                        color = (0,0,0)))
-        self.Spindle_Bottom = cylinder(pos = (0,0,0), axis = (0,0,self.Spindle_Bottom_Height),
-                                       radius = self.Spindle_Bottom_Radius,
-                                       material = materials.plastic,
-                                       color = (0.1,0.1,0.1))
-        self.Spindle_Middle = cylinder(pos = (0,0,self.Spindle_Bottom_Height),
-                                       axis = (0,0,self.Spindle_Middle_Height),
-                                       radius = self.Spindle_Middle_Radius,
-                                       material = materials.plastic,
-                                       color = (0.1,0.1,0.1))
-        self.Spindle_Top = cylinder(pos = (0,0,self.Spindle_Bottom_Height+self.Spindle_Middle_Height),
-                                       axis = (0,0,self.Spindle_Top_Height),
-                                       radius = self.Spindle_Top_Radius,
-                                    material = materials.chrome,
-                                    color = (0.9, 0.9, 0.9))
+                                        color = (0,0,0), frame = self.Container))
+
 
 room1 = DormRoom()
 #test1 = Refrigerator(room1)
@@ -719,8 +740,8 @@ room1 = DormRoom()
 #global posterimage
 #posterimage = "mhcposter" #right now the choices are mhcposter, metacubeposter and flowerposter
 #test3 = Poster(room1, 3, 3)
-test4 = BookShelf(room1)
-test5 = Drawers(room1)
+#test4 = BookShelf(room1)
+#test5 = Drawers(room1)
 #test6 = Table(room1)
 #test7 = Bed(room1)
 #test8 = Chair(room1)
@@ -728,6 +749,7 @@ test5 = Drawers(room1)
 #test10 = Lamp(room1)
 #test11 = Closet(room1)
 #test12 = WallLight(room1)
+test13 = Olin_Chair(room1)
 
 
 while True:
