@@ -137,8 +137,7 @@ class Room(object):
             autoscale = autoscale,
             ambient = ambient,
             lights = lights,
-            up = (0,0,1),
-            forward = (0,-.01,-1))
+            up = (0,0,1))
         self.Walls = Walls(width, height, length, walls) #create the walls
         self.Selected = None
         self.ObjectList = [self.Walls] #add the walls to the object list - room object list should only contain things with an object list. Those object lists should only contain objects
@@ -150,22 +149,15 @@ class Room(object):
             m1=None
         if m1:
             if m1.click:
-                done = False
                 for thing in self.ObjectList[1:]: #if an object is picked, or is currently being dragged or turned, call drag (currently a little buggy - try it out and you'll see what i mean)
                     picked= False
                     for part in thing.ObjectList:
                         picked = (self.Display.mouse.pick == part) or picked
                         if picked:
-                            done = True
                             if self.Selected:
                                 self.Selected.Selected = False
                             self.Selected = thing
                             thing.Selected = True
-                if not done:
-                    if self.Selected:
-                        self.Selected.Selected = False
-                        self.Selected = None
-                    
         if self.Display.kb.keys: # if the keyboard's been used
             k = self.Display.kb.getkey()
             if k == '1' or k =='2' or k == '3' or k =='4' or k=='5': #if the x,y,or z keys were pressed, call snap to view
@@ -176,11 +168,6 @@ class Room(object):
                 else:
                     for thing in self.ObjectList[1:]:
                         thing.Snap_To_Grid(self.Display)
-            if k=='up' or k=='down' or k=='left' or k=='right':
-                if self.Selected:
-                    self.Selected.move(k)
-                else:
-                    self.rotate_view(k)
         for thing in self.ObjectList[1:]: #if an object is picked, or is currently being dragged or turned, call drag (currently a little buggy - try it out and you'll see what i mean)
             picked= False
             for part in thing.ObjectList:
@@ -193,22 +180,22 @@ class Room(object):
         
     def walls_view(self): #make the walls disappear if they're between the viewer and the center
         try:
-            if self.Display.forward.x>.29:
+            if self.Display.forward.x>.01:
                 self.Walls.WestWall.visible = False
                 self.Walls.EastWall.visible = True
-            if self.Display.forward.x<-.29:
+            if self.Display.forward.x<-.01:
                 self.Walls.EastWall.visible = False
                 self.Walls.WestWall.visible = True
-            if self.Display.forward.y>.23:
+            if self.Display.forward.y>.01:
                 self.Walls.NorthWall.visible = False
                 self.Walls.SouthWall.visible = True
-            if self.Display.forward.y<-.23:
+            if self.Display.forward.y<-.01:
                 self.Walls.SouthWall.visible = False
                 self.Walls.NorthWall.visible = True
-            if self.Display.forward.z>0.34:
+            if self.Display.forward.z>0.23:
                 self.Walls.Floor.visible = False
                 self.Walls.Ceiling.visible = True
-            if self.Display.forward.z<0.34:
+            if self.Display.forward.z<0.23:
                 self.Walls.Ceiling.visible = False
                 self.Walls.Floor.visible = True
         except:
@@ -224,23 +211,7 @@ class Room(object):
         if k == '4':
             self.Display.forward = vector(0,-1,0)
         if k == '5':
-            self.Display.forward = vector(0,.01,-1)
-            
-    def rotate_view(self,k):
-        if k =='up':
-            print self.Display.forward.norm()
-            if abs(self.Display.forward.norm().x) < .1 and abs(self.Display.forward.norm().y) < 0.1 and self.Display.forward.norm().z<0:
-                pass
-            else:
-                axis = cross(self.Display.forward,self.Display.up)
-                self.Display.forward = rotate(self.Display.forward, angle = -.1,axis = axis)
-        elif k == 'down':
-            axis = cross(self.Display.forward,self.Display.up)
-            self.Display.forward = rotate(self.Display.forward, angle = .1,axis = axis)
-        elif k == 'left':
-            self.Display.forward = rotate(self.Display.forward, angle = -.1,axis = self.Display.up)
-        else:
-            self.Display.forward = rotate(self.Display.forward, angle = .1,axis = self.Display.up)
+            self.Display.forward = vector(0,0,-1)
 
 
 class Walls: #class only to be called by room function to create walls
@@ -267,24 +238,24 @@ class DormRoom(Room):
         self.Walls.Window = box(pos=(self.Width/2.,0.01,6), axis=(1,0,0), size = (4.5,.01,5.5), color=color.yellow, material = materials.emissive)
         self.Walls.ObjectList = self.Walls.ObjectList + [self.Walls.DivWall1,self.Walls.DivWall2,self.Walls.SinkBack,self.Walls.SinkSide,self.Walls.Sink,self.Walls.Window]
     def walls_view(self):
-        if self.Display.forward.x>.29:
+        if self.Display.forward.x>.01:
             self.Walls.WestWall.visible = False
             self.Walls.EastWall.visible = True
-        if self.Display.forward.x<-.29:
+        if self.Display.forward.x<-.01:
             self.Walls.EastWall.visible = False
             self.Walls.WestWall.visible = True
-        if self.Display.forward.y>.21:
+        if self.Display.forward.y>.01:
             self.Walls.NorthWall.visible = False
             self.Walls.Window.visible = False
             self.Walls.SouthWall.visible = True
-        if self.Display.forward.y<-.21:
+        if self.Display.forward.y<-.01:
             self.Walls.SouthWall.visible = False
             self.Walls.NorthWall.visible = True
             self.Walls.Window.visible = True
-        if self.Display.forward.z>0.35:
+        if self.Display.forward.z>0.23:
             self.Walls.Floor.visible = False
             self.Walls.Ceiling.visible = True
-        if self.Display.forward.z<0.35:
+        if self.Display.forward.z<0.23:
             self.Walls.Ceiling.visible = False
             self.Walls.Floor.visible = True
     
@@ -305,20 +276,6 @@ class Furniture:
         else:
             self.Pos = Position
         Room.ObjectList = Room.ObjectList + [self]
-
-    def move(self,k):
-        if k=='up':
-            for part in self.ObjectList:
-                part.pos = part.pos - vector(0,1./3,0)
-        if k=='down':
-            for part in self.ObjectList:
-                part.pos = part.pos + vector(0,1./3,0)
-        if k=='left':
-            for part in self.ObjectList:
-                part.pos = part.pos + vector(1./3,0,0)
-        if k=='right':
-            for part in self.ObjectList:
-                part.pos = part.pos - vector(1./3,0,0)
 
     def drag(self, room, m):
         drag, New_Pos, Drag_Pos, turn, Turn_Start, Turn_End, m1 = self.DragSettings
@@ -783,7 +740,7 @@ room1 = DormRoom()
 #global posterimage
 #posterimage = "mhcposter" #right now the choices are mhcposter, metacubeposter and flowerposter
 #test3 = Poster(room1, 3, 3)
-#test4 = BookShelf(room1)
+test4 = BookShelf(room1)
 #test5 = Drawers(room1)
 #test6 = Table(room1)
 #test7 = Bed(room1)
@@ -792,13 +749,12 @@ room1 = DormRoom()
 #test10 = Lamp(room1)
 #test11 = Closet(room1)
 #test12 = WallLight(room1)
-test13 = Olin_Chair(room1)
+#test13 = Olin_Chair(room1)
 
 
 while True:
     rate(20)
     room1.walls_view()
     room1.handler()
-    print room1.Display.forward
     
 
