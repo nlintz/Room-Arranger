@@ -308,16 +308,16 @@ class Furniture:
     def move(self,k):
         if k=='up':
             for part in self.ObjectList:
-                part.pos = part.pos - vector(0,1./3,0)
+                part.pos = part.pos + vector(0,1./3,0)
         if k=='down':
             for part in self.ObjectList:
-                part.pos = part.pos + vector(0,1./3,0)
+                part.pos = part.pos - vector(0,1./3,0)
         if k=='left':
             for part in self.ObjectList:
-                part.pos = part.pos + vector(1./3,0,0)
+                part.pos = part.pos - vector(1./3,0,0)
         if k=='right':
             for part in self.ObjectList:
-                part.pos = part.pos - vector(1./3,0,0)
+                part.pos = part.pos + vector(1./3,0,0)
 
     def drag(self, room, m):
         drag, New_Pos, Drag_Pos, turn, Turn_Start, Turn_End, m1 = self.DragSettings
