@@ -676,6 +676,85 @@ class WallLight(Furniture):
         self.Invis_Cylinder = cylinder(pos = (0,0,0), axis = (0,0, self.Height),  radius  = self.Radius, opacity = 0.5)
         self.ObjectList = [self.Light, self.Lamp, self.BottomBorder, self.TopBorder, self.Invis_Cylinder]
 
+class Olin_Chair(Furniture):
+    def __init__(self, Room, Number_Of_Legs = 5, Starting_Leg_Width = 1.7/12, Ending_Leg_Width = 1.9/12,
+                 Leg_Length = 1, Starting_Leg_Height = 1.4/12, Ending_Leg_Height = 2.2/12, Wheel_Width = 2.1/12,
+                 Wheel_Radius = 1.1/12, Wheel_Margin = 0.25/12, Spindle_Bottom_Height = 5.7/12,
+                 Spindle_Middle_Height = 1.1/12, Spindle_Top_Height = 5.3/12, Spindle_Bottom_Radius =1.4/12,
+                 Spindle_Middle_Radius = 1.1/12, Spindle_Top_Radius = 0.55/12, Position = []):
+        Furniture.__init__(self, 1,1,1, Position)
+        self.Number_Of_Legs = Number_Of_Legs
+        self.Starting_Leg_Width = Starting_Leg_Width
+        self.Ending_Leg_Width = Ending_Leg_Width
+        self.Leg_Length = Leg_Length
+        self.Starting_Leg_Height = Starting_Leg_Height
+        self.Ending_Leg_Height = Ending_Leg_Height
+        self.Wheel_Width = Wheel_Width
+        self.Wheel_Radius = Wheel_Radius
+        self.Wheel_Margin = Wheel_Margin
+        self.Spindle_Bottom_Height = Spindle_Bottom_Height
+        self.Spindle_Bottom_Radius = Spindle_Bottom_Radius
+        self.Spindle_Middle_Height = Spindle_Middle_Height
+        self.Spindle_Middle_Radius = Spindle_Middle_Radius
+        self.Spindle_Top_Height = Spindle_Top_Height
+        self.Spindle_Top_Radius = Spindle_Top_Radius
+        self.X_Scale = Ending_Leg_Width/Starting_Leg_Width
+        self.Y_Scale = Ending_Leg_Height/Starting_Leg_Height
+        self.Leg_Angle = (2*math.pi)/self.Number_Of_Legs
+        Leg_Circle = shapes.circle(radius = self.Starting_Leg_Width/2.)
+        Leg_Square = shapes.rectangle(width = self.Starting_Leg_Width,
+                                      height = self.Starting_Leg_Height)
+        self.Leg_Shape = Leg_Circle&Leg_Square
+        self.Legs = []
+        self.Wheel_Housing = []
+        self.Wheels = []
+        for i in range(1, self.Number_Of_Legs+1):
+            Leg_End_Point = vector(self.Leg_Length*(math.sin(i*self.Leg_Angle)),
+                         self.Leg_Length*(math.cos(i*self.Leg_Angle)),0)
+            self.Legs.append(extrusion(pos = [(0,0,0),
+                                              Leg_End_Point],
+                                       shape = self.Leg_Shape,
+                                       material = materials.rough,
+                                       color = (255,0,255),
+                                       xscale = [self.X_Scale, 1],
+                                       yscale = [self.Y_Scale,1]))
+            self.Legs.append(sphere(pos = Leg_End_Point, radius = self.Starting_Leg_Width/2.,
+                                    material = materials.rough, color = (255,0,255)))
+            
+            Wheel_Housing_Shape = shapes.arc(radius = (self.Wheel_Radius+ self.Wheel_Margin),
+                                             angle1 = 0,
+                                             angle2 = 2*pi)
+            
+            Wheel_Offset = vector((self.Wheel_Width/2.)*(math.sin((i*self.Leg_Angle)-(math.pi/2))),
+                                  (self.Wheel_Width/2.)*(math.cos((i*self.Leg_Angle)-(math.pi/2))),)
+            
+            Wheel_Housing_Drop = vector(0,0,-self.Starting_Leg_Height)
+
+            Wheel_Drop = vector(0,0,-self.Starting_Leg_Height - self.Wheel_Margin)
+            
+            self.Wheel_Housing.append(extrusion(pos = [(Leg_End_Point-Wheel_Offset+Wheel_Housing_Drop),
+                                                       (Leg_End_Point+Wheel_Offset+Wheel_Housing_Drop)],
+                                                shape = Wheel_Housing_Shape))
+            self.Wheels.append(cylinder(pos = (Leg_End_Point-Wheel_Offset+Wheel_Drop-(0.25*Wheel_Offset)),
+                                        axis =(2.5*Wheel_Offset),
+                                        radius = self.Wheel_Radius+self.Wheel_Margin,
+                                        material = materials.wood,
+                                        color = (0,0,0)))
+        self.Spindle_Bottom = cylinder(pos = (0,0,0), axis = (0,0,self.Spindle_Bottom_Height),
+                                       radius = self.Spindle_Bottom_Radius,
+                                       material = materials.plastic,
+                                       color = (0.1,0.1,0.1))
+        self.Spindle_Middle = cylinder(pos = (0,0,self.Spindle_Bottom_Height),
+                                       axis = (0,0,self.Spindle_Middle_Height),
+                                       radius = self.Spindle_Middle_Radius,
+                                       material = materials.plastic,
+                                       color = (0.1,0.1,0.1))
+        self.Spindle_Top = cylinder(pos = (0,0,self.Spindle_Bottom_Height+self.Spindle_Middle_Height),
+                                       axis = (0,0,self.Spindle_Top_Height),
+                                       radius = self.Spindle_Top_Radius,
+                                    material = materials.chrome,
+                                    color = (0.9, 0.9, 0.9))
+
 room1 = DormRoom()
 #test1 = Refrigerator(room1)
 #test2 = Desk(room1)
