@@ -84,15 +84,15 @@ class Colliding:
             if thing1.__class__.__name__ == 'cylinder' and thing1.axis.x == 0 and thing1.axis.y == 0: #if this is a vertically oriented cylinder
                 dist1 = abs(.5*thing1.length)
                 center1 = thing1.pos.z + (dist1 * (thing1.axis.z/abs(thing1.axis.z))) #the vertical center of the cylinder
-                for thing2 in things: #same as above
-                    if thing2.__class__.__name__ == 'box':
-                        center2 = thing2.pos.z
-                        dist2 = abs(.5*thing2.size.z)
-                    if thing2.__class__.__name__ == 'cylinder' and thing2.axis.x == 0 and thing1.axis.y == 0:
-                        dist2 = abs(.5*thing2.length)
-                        center2 = thing2.pos.z + (dist2 * (thing2.axis.z/abs(thing2.axis.z)))
-                    if center1+dist1-.01 > center2-dist2 and center1-dist1+.01 < center2+dist2: #If the two vertical spans are not disjoint
-                        return True
+            for thing2 in things: #same as above
+                if thing2.__class__.__name__ == 'box':
+                    center2 = thing2.pos.z
+                    dist2 = abs(.5*thing2.size.z)
+                if thing2.__class__.__name__ == 'cylinder' and thing2.axis.x == 0 and thing1.axis.y == 0:
+                    dist2 = abs(.5*thing2.length)
+                    center2 = thing2.pos.z + (dist2 * (thing2.axis.z/abs(thing2.axis.z)))
+                if center1+dist1-.01 > center2-dist2 and center1-dist1+.01 < center2+dist2: #If the two vertical spans are not disjoint
+                    return True
         return False
             
 
@@ -168,6 +168,9 @@ class Room(object):
                 else:
                     for thing in self.ObjectList[1:]:
                         thing.Snap_To_Grid(self.Display)
+            if k=='g':
+                if self.Selected:
+                    self.Selected.Gravity(self.ObjectList[0].ObjectList[0])
         for thing in self.ObjectList[1:]: #if an object is picked, or is currently being dragged or turned, call drag (currently a little buggy - try it out and you'll see what i mean)
             picked= False
             for part in thing.ObjectList:
@@ -276,6 +279,17 @@ class Furniture:
         else:
             self.Pos = Position
         Room.ObjectList = Room.ObjectList + [self]
+
+    def Gravity(self, floor):
+        while True:
+            for part in self.ObjectList:
+                if self.Collide.has_intersect_z(part,floor):
+                    return
+                if part.pos.z < -5:
+                    return
+            for part in self.ObjectList:
+                part.pos -= vector(0,0,.001)
+    
 
     def move(self,k):
         if k=='up':
