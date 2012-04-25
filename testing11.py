@@ -670,7 +670,10 @@ class Olin_Chair(Furniture):
                  Leg_Length = 1, Starting_Leg_Height = 1.4/12, Ending_Leg_Height = 2.2/12, Wheel_Width = 2.1/12,
                  Wheel_Radius = 1.1/12, Wheel_Margin = 0.25/12, Spindle_Bottom_Height = 5.7/12,
                  Spindle_Middle_Height = 1.1/12, Spindle_Top_Height = 5.3/12, Spindle_Bottom_Radius =1.4/12,
-                 Spindle_Middle_Radius = 1.1/12, Spindle_Top_Radius = 0.55/12, Position = []):
+                 Spindle_Middle_Radius = 1.1/12, Spindle_Top_Radius = 0.55/12, Arm_Rail_Thickness = 1.5/12,
+                 Arm_Rail_Width = 0.8/12, Arm_Rail_Offset = 2.3/12, Arm_X_Extend = 9./12,
+                 Arm_Curve_Radius = 2./12, Arm_Y_Extend = 7.5/12, Arm_Rest_Width = 3.8/12,
+                 Arm_Rest_Length = 10./12, Arm_Rest_Thickness = 1.2/12, Position = []):
         Furniture.__init__(self, Room, 1,1,1, Position)
         self.Number_Of_Legs = Number_Of_Legs
         self.Starting_Leg_Width = Starting_Leg_Width
@@ -687,6 +690,15 @@ class Olin_Chair(Furniture):
         self.Spindle_Middle_Radius = Spindle_Middle_Radius
         self.Spindle_Top_Height = Spindle_Top_Height
         self.Spindle_Top_Radius = Spindle_Top_Radius
+        self. Arm_Rail_Thickness = Arm_Rail_Thickness
+        self.Arm_Rail_Width = Arm_Rail_Width
+        self.Arm_Rail_Offset = Arm_Rail_Offset
+        self.Arm_X_Extend = Arm_X_Extend
+        self.Arm_Curve_Radius = Arm_Curve_Radius
+        self.Arm_Y_Extend = Arm_Y_Extend
+        self.Arm_Rest_Width = Arm_Rest_Width
+        self.Arm_Rest_Length = Arm_Rest_Length
+        self.Arm_Rest_Thickness = Arm_Rest_Thickness
         self.X_Scale = Ending_Leg_Width/Starting_Leg_Width
         self.Y_Scale = Ending_Leg_Height/Starting_Leg_Height
         self.Leg_Angle = (2*math.pi)/self.Number_Of_Legs
@@ -705,8 +717,40 @@ class Olin_Chair(Furniture):
                                        radius = self.Spindle_Top_Radius,
                                     material = materials.chrome,
                                     color = (0.9, 0.9, 0.9), frame = self.Container)
-        
+        self.Rail_Shape = shapes.ellipse(width = self.Arm_Rail_Width,
+                                         height = self.Arm_Rail_Thickness)
+        self.Rail_Origin = vector(0, -self.Arm_Rail_Offset,
+                                  self.Spindle_Bottom_Height+self.Spindle_Middle_Height+
+                                  self.Spindle_Top_Height)
+
         self.ObjectList = [self.Spindle_Bottom, self.Spindle_Middle, self.Spindle_Top]
+
+        for x in range(0,2):
+            if x == 0:
+                multiplier = 1
+            elif x == 1:
+                multiplier = -1
+            self.ObjectList.append(extrusion(pos = [(self.Rail_Origin),
+                                                 (self.Rail_Origin+(multiplier*self.Arm_X_Extend,0,0))],
+                                          shape = self.Rail_Shape,
+                                          material = materials.earth,
+                                          frame = self.Container))
+            Next_Origin = vector((self.Rail_Origin+(multiplier*self.Arm_X_Extend,0,self.Arm_Curve_Radius)))
+            Curve_Path = paths.arc(pos = Next_Origin, radius = self.Arm_Curve_Radius,
+                                   angle1 = (math.pi/2)+(x*(math.pi/2)), angle2 = 0+(x*(math.pi/2)))
+            self.ObjectList.append(extrusion(pos= Curve_Path, shape = self.Rail_Shape,
+                                             frame = self.Container))
+            Next_Origin = Next_Origin + vector(multiplier*self.Arm_Curve_Radius, 0, 0)
+            self.ObjectList.append(extrusion(pos = [(Next_Origin), (Next_Origin+vector(0,0,self.Arm_Y_Extend))],
+                                             shape = self.Rail_Shape,
+                                             frame = self.Container))
+            Next_Origin = (Next_Origin+vector(0,0,self.Arm_Y_Extend))
+            self.Arm_Rest_Shape = shapes.ellipse(width = self.Arm_Rest_Width,
+                                                 height = self. Arm_Rest_Length)
+            self.ObjectList.append(extrusion(pos = [(Next_Origin), (Next_Origin + vector(0,0, Arm_Rest_Thickness))],
+                                             shape = self.Arm_Rest_Shape, frame = self.Container))
+                           
+
         
         Leg_Circle = shapes.circle(radius = self.Starting_Leg_Width/2.)
         Leg_Square = shapes.rectangle(width = self.Starting_Leg_Width,
@@ -754,7 +798,7 @@ room1 = DormRoom()
 #global posterimage
 #posterimage = "mhcposter" #right now the choices are mhcposter, metacubeposter and flowerposter
 #test3 = Poster(room1, 3, 3)
-test4 = BookShelf(room1)
+#test4 = BookShelf(room1)
 #test5 = Drawers(room1)
 #test6 = Table(room1)
 #test7 = Bed(room1)
@@ -763,7 +807,7 @@ test4 = BookShelf(room1)
 #test10 = Lamp(room1)
 #test11 = Closet(room1)
 #test12 = WallLight(room1)
-#test13 = Olin_Chair(room1)
+test13 = Olin_Chair(room1)
 
 
 while True:
