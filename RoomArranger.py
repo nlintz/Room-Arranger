@@ -1,429 +1,288 @@
-# -*- coding: utf-8 -*-
+import sys
+from PySide.QtGui import QApplication, QMainWindow, QTextEdit, QPushButton
+from PySide import QtCore
+from RoomArrangerGui import Ui_RoomArranger
+from testing11 import *
+from threading import Thread
+from time import sleep
 
-# Form implementation generated from reading ui file 'Gui4.ui'
-#
-# Created: Fri Apr 27 11:18:18 2012
-#      by: pyside-uic 0.2.11 running on PySide 1.1.0
-#
-# WARNING! All changes made in this file will be lost!
+class MainWindow(QMainWindow, Ui_RoomArranger):
+    
 
-from PySide import QtCore, QtGui
+    def __init__(self, parent=None, room=DormRoom(),defaultsDict={}):
+        self.defaultsDict={'Microwave':[1.8,1,1], 'WallLight':[1], 'Poster':[2,2], 'Handle':[.5], 'Olin_Chair':[], 'Table':[3,3,2.5], 'Chair':[2,2,1.8], 'Refrigerator':[1.6,1.83,2.75], 'Bed':[3.17,7.17,2.83], 'Bookshelf':[2.5,1.25,2.25], 'Closet':[3,1.85,6.25], 'Lamp':[5], 'Desk':[2.5,5,2.5]}
+        self.startingRoom = room
+        room.walls_view()
+        
+        super(MainWindow, self).__init__(parent)
+        self.setupUi(self)
+  
+        self.TableButton.clicked.connect(self.make_Table)
+        self.TableWidth.valueChanged.connect(self.changeTableWidth)
+        self.TableLength.valueChanged.connect(self.changeTableLength)
+        self.TableHeight.valueChanged.connect(self.changeTableHeight)
+        
+        self.MicrowaveButton.clicked.connect(self.make_Microwave)
+        self.MIcrowaveWidth.valueChanged.connect(self.changeMicrowaveWidth)
+        self.MicrowaveLength.valueChanged.connect(self.changeMicrowaveLength)
+        self.MicrowaveHeight.valueChanged.connect(self.changeMicrowaveHeight)
 
-class Ui_RoomArranger(object):
-    def setupUi(self, RoomArranger):
-        RoomArranger.setObjectName("RoomArranger")
-        RoomArranger.resize(545, 979)
-        self.centralwidget = QtGui.QWidget(RoomArranger)
-        self.centralwidget.setObjectName("centralwidget")
-        self.frame = QtGui.QFrame(self.centralwidget)
-        self.frame.setGeometry(QtCore.QRect(10, 0, 521, 931))
-        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame.setObjectName("frame")
-        self.layoutWidget = QtGui.QWidget(self.frame)
-        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 502, 909))
-        self.layoutWidget.setObjectName("layoutWidget")
-        self.gridLayout_3 = QtGui.QGridLayout(self.layoutWidget)
-        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_3.setObjectName("gridLayout_3")
-        self.gridLayout = QtGui.QGridLayout()
-        self.gridLayout.setObjectName("gridLayout")
-        self.MicrowaveButton = QtGui.QPushButton(self.layoutWidget)
-        self.MicrowaveButton.setObjectName("MicrowaveButton")
-        self.gridLayout.addWidget(self.MicrowaveButton, 0, 2, 1, 1)
-        self.WallLightButton = QtGui.QPushButton(self.layoutWidget)
-        self.WallLightButton.setObjectName("WallLightButton")
-        self.gridLayout.addWidget(self.WallLightButton, 2, 2, 1, 1)
-        self.ClosetButton = QtGui.QPushButton(self.layoutWidget)
-        self.ClosetButton.setObjectName("ClosetButton")
-        self.gridLayout.addWidget(self.ClosetButton, 4, 0, 1, 1)
-        self.label = QtGui.QLabel(self.layoutWidget)
-        self.label.setText("")
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 13, 0, 1, 1)
-        self.MaterialBox = QtGui.QComboBox(self.layoutWidget)
-        self.MaterialBox.setObjectName("MaterialBox")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.MaterialBox.addItem("")
-        self.gridLayout.addWidget(self.MaterialBox, 13, 2, 1, 1)
-        self.DeskButton = QtGui.QPushButton(self.layoutWidget)
-        self.DeskButton.setObjectName("DeskButton")
-        self.gridLayout.addWidget(self.DeskButton, 6, 0, 1, 1)
-        self.PosterButton = QtGui.QPushButton(self.layoutWidget)
-        self.PosterButton.setObjectName("PosterButton")
-        self.gridLayout.addWidget(self.PosterButton, 0, 1, 1, 1)
-        self.TableButton = QtGui.QPushButton(self.layoutWidget)
-        self.TableButton.setObjectName("TableButton")
-        self.gridLayout.addWidget(self.TableButton, 2, 1, 1, 1)
-        self.HandleButton = QtGui.QPushButton(self.layoutWidget)
-        self.HandleButton.setObjectName("HandleButton")
-        self.gridLayout.addWidget(self.HandleButton, 4, 1, 1, 1)
-        self.ChairButton = QtGui.QPushButton(self.layoutWidget)
-        self.ChairButton.setObjectName("ChairButton")
-        self.gridLayout.addWidget(self.ChairButton, 6, 1, 1, 1)
-        self.OlinChairButton = QtGui.QPushButton(self.layoutWidget)
-        self.OlinChairButton.setObjectName("OlinChairButton")
-        self.gridLayout.addWidget(self.OlinChairButton, 8, 0, 1, 1)
-        self.BedButton = QtGui.QPushButton(self.layoutWidget)
-        self.BedButton.setObjectName("BedButton")
-        self.gridLayout.addWidget(self.BedButton, 0, 0, 1, 1)
-        self.verticalLayout_11 = QtGui.QVBoxLayout()
-        self.verticalLayout_11.setObjectName("verticalLayout_11")
-        self.label_30 = QtGui.QLabel(self.layoutWidget)
-        self.label_30.setObjectName("label_30")
-        self.verticalLayout_11.addWidget(self.label_30)
-        self.BedWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.BedWidth.setMaximum(10)
-        self.BedWidth.setObjectName("BedWidth")
-        self.verticalLayout_11.addWidget(self.BedWidth)
-        self.label_31 = QtGui.QLabel(self.layoutWidget)
-        self.label_31.setObjectName("label_31")
-        self.verticalLayout_11.addWidget(self.label_31)
-        self.BedLength = QtGui.QSpinBox(self.layoutWidget)
-        self.BedLength.setMaximum(10)
-        self.BedLength.setObjectName("BedLength")
-        self.verticalLayout_11.addWidget(self.BedLength)
-        self.label_32 = QtGui.QLabel(self.layoutWidget)
-        self.label_32.setObjectName("label_32")
-        self.verticalLayout_11.addWidget(self.label_32)
-        self.BedHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.BedHeight.setMaximum(10)
-        self.BedHeight.setObjectName("BedHeight")
-        self.verticalLayout_11.addWidget(self.BedHeight)
-        self.gridLayout.addLayout(self.verticalLayout_11, 1, 0, 1, 1)
-        self.verticalLayout_4 = QtGui.QVBoxLayout()
-        self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.label_9 = QtGui.QLabel(self.layoutWidget)
-        self.label_9.setObjectName("label_9")
-        self.verticalLayout_4.addWidget(self.label_9)
-        self.BookshelfWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.BookshelfWidth.setMaximum(10)
-        self.BookshelfWidth.setObjectName("BookshelfWidth")
-        self.verticalLayout_4.addWidget(self.BookshelfWidth)
-        self.label_10 = QtGui.QLabel(self.layoutWidget)
-        self.label_10.setObjectName("label_10")
-        self.verticalLayout_4.addWidget(self.label_10)
-        self.BookshelfLength = QtGui.QSpinBox(self.layoutWidget)
-        self.BookshelfLength.setMaximum(10)
-        self.BookshelfLength.setObjectName("BookshelfLength")
-        self.verticalLayout_4.addWidget(self.BookshelfLength)
-        self.label_11 = QtGui.QLabel(self.layoutWidget)
-        self.label_11.setObjectName("label_11")
-        self.verticalLayout_4.addWidget(self.label_11)
-        self.BookshelfHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.BookshelfHeight.setMaximum(10)
-        self.BookshelfHeight.setObjectName("BookshelfHeight")
-        self.verticalLayout_4.addWidget(self.BookshelfHeight)
-        self.gridLayout.addLayout(self.verticalLayout_4, 3, 0, 1, 1)
-        self.verticalLayout = QtGui.QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.label_3 = QtGui.QLabel(self.layoutWidget)
-        self.label_3.setObjectName("label_3")
-        self.verticalLayout.addWidget(self.label_3)
-        self.ClosetWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.ClosetWidth.setMaximum(10)
-        self.ClosetWidth.setObjectName("ClosetWidth")
-        self.verticalLayout.addWidget(self.ClosetWidth)
-        self.label_4 = QtGui.QLabel(self.layoutWidget)
-        self.label_4.setObjectName("label_4")
-        self.verticalLayout.addWidget(self.label_4)
-        self.ClosetLength = QtGui.QSpinBox(self.layoutWidget)
-        self.ClosetLength.setMaximum(10)
-        self.ClosetLength.setObjectName("ClosetLength")
-        self.verticalLayout.addWidget(self.ClosetLength)
-        self.label_5 = QtGui.QLabel(self.layoutWidget)
-        self.label_5.setObjectName("label_5")
-        self.verticalLayout.addWidget(self.label_5)
-        self.ClosetHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.ClosetHeight.setMaximum(10)
-        self.ClosetHeight.setObjectName("ClosetHeight")
-        self.verticalLayout.addWidget(self.ClosetHeight)
-        self.gridLayout.addLayout(self.verticalLayout, 5, 0, 1, 1)
-        self.verticalLayout_5 = QtGui.QVBoxLayout()
-        self.verticalLayout_5.setObjectName("verticalLayout_5")
-        self.label_12 = QtGui.QLabel(self.layoutWidget)
-        self.label_12.setObjectName("label_12")
-        self.verticalLayout_5.addWidget(self.label_12)
-        self.DeskWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.DeskWidth.setMaximum(10)
-        self.DeskWidth.setObjectName("DeskWidth")
-        self.verticalLayout_5.addWidget(self.DeskWidth)
-        self.label_13 = QtGui.QLabel(self.layoutWidget)
-        self.label_13.setObjectName("label_13")
-        self.verticalLayout_5.addWidget(self.label_13)
-        self.DeskLength = QtGui.QSpinBox(self.layoutWidget)
-        self.DeskLength.setMaximum(10)
-        self.DeskLength.setObjectName("DeskLength")
-        self.verticalLayout_5.addWidget(self.DeskLength)
-        self.label_14 = QtGui.QLabel(self.layoutWidget)
-        self.label_14.setObjectName("label_14")
-        self.verticalLayout_5.addWidget(self.label_14)
-        self.DeskHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.DeskHeight.setMaximum(10)
-        self.DeskHeight.setObjectName("DeskHeight")
-        self.verticalLayout_5.addWidget(self.DeskHeight)
-        self.gridLayout.addLayout(self.verticalLayout_5, 7, 0, 1, 1)
-        self.verticalLayout_7 = QtGui.QVBoxLayout()
-        self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.label_18 = QtGui.QLabel(self.layoutWidget)
-        self.label_18.setObjectName("label_18")
-        self.verticalLayout_7.addWidget(self.label_18)
-        self.MIcrowaveWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.MIcrowaveWidth.setMaximum(10)
-        self.MIcrowaveWidth.setObjectName("MIcrowaveWidth")
-        self.verticalLayout_7.addWidget(self.MIcrowaveWidth)
-        self.label_19 = QtGui.QLabel(self.layoutWidget)
-        self.label_19.setObjectName("label_19")
-        self.verticalLayout_7.addWidget(self.label_19)
-        self.MicrowaveLength = QtGui.QSpinBox(self.layoutWidget)
-        self.MicrowaveLength.setMaximum(10)
-        self.MicrowaveLength.setObjectName("MicrowaveLength")
-        self.verticalLayout_7.addWidget(self.MicrowaveLength)
-        self.label_20 = QtGui.QLabel(self.layoutWidget)
-        self.label_20.setObjectName("label_20")
-        self.verticalLayout_7.addWidget(self.label_20)
-        self.MicrowaveHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.MicrowaveHeight.setMaximum(10)
-        self.MicrowaveHeight.setObjectName("MicrowaveHeight")
-        self.verticalLayout_7.addWidget(self.MicrowaveHeight)
-        self.gridLayout.addLayout(self.verticalLayout_7, 1, 2, 1, 1)
-        self.verticalLayout_8 = QtGui.QVBoxLayout()
-        self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.label_21 = QtGui.QLabel(self.layoutWidget)
-        self.label_21.setObjectName("label_21")
-        self.verticalLayout_8.addWidget(self.label_21)
-        self.TableWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.TableWidth.setMaximum(10)
-        self.TableWidth.setObjectName("TableWidth")
-        self.verticalLayout_8.addWidget(self.TableWidth)
-        self.label_22 = QtGui.QLabel(self.layoutWidget)
-        self.label_22.setObjectName("label_22")
-        self.verticalLayout_8.addWidget(self.label_22)
-        self.TableLength = QtGui.QSpinBox(self.layoutWidget)
-        self.TableLength.setMaximum(10)
-        self.TableLength.setObjectName("TableLength")
-        self.verticalLayout_8.addWidget(self.TableLength)
-        self.label_23 = QtGui.QLabel(self.layoutWidget)
-        self.label_23.setObjectName("label_23")
-        self.verticalLayout_8.addWidget(self.label_23)
-        self.TableHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.TableHeight.setMaximum(10)
-        self.TableHeight.setObjectName("TableHeight")
-        self.verticalLayout_8.addWidget(self.TableHeight)
-        self.gridLayout.addLayout(self.verticalLayout_8, 3, 1, 1, 1)
-        self.verticalLayout_10 = QtGui.QVBoxLayout()
-        self.verticalLayout_10.setObjectName("verticalLayout_10")
-        self.label_27 = QtGui.QLabel(self.layoutWidget)
-        self.label_27.setObjectName("label_27")
-        self.verticalLayout_10.addWidget(self.label_27)
-        self.PosterWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.PosterWidth.setMaximum(10)
-        self.PosterWidth.setObjectName("PosterWidth")
-        self.verticalLayout_10.addWidget(self.PosterWidth)
-        self.label_28 = QtGui.QLabel(self.layoutWidget)
-        self.label_28.setObjectName("label_28")
-        self.verticalLayout_10.addWidget(self.label_28)
-        self.PosterLength = QtGui.QSpinBox(self.layoutWidget)
-        self.PosterLength.setMaximum(10)
-        self.PosterLength.setObjectName("PosterLength")
-        self.verticalLayout_10.addWidget(self.PosterLength)
-        self.gridLayout.addLayout(self.verticalLayout_10, 1, 1, 1, 1)
-        self.verticalLayout_9 = QtGui.QVBoxLayout()
-        self.verticalLayout_9.setObjectName("verticalLayout_9")
-        self.label_24 = QtGui.QLabel(self.layoutWidget)
-        self.label_24.setObjectName("label_24")
-        self.verticalLayout_9.addWidget(self.label_24)
-        self.ChairWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.ChairWidth.setMaximum(10)
-        self.ChairWidth.setObjectName("ChairWidth")
-        self.verticalLayout_9.addWidget(self.ChairWidth)
-        self.label_25 = QtGui.QLabel(self.layoutWidget)
-        self.label_25.setObjectName("label_25")
-        self.verticalLayout_9.addWidget(self.label_25)
-        self.ChairLength = QtGui.QSpinBox(self.layoutWidget)
-        self.ChairLength.setMaximum(10)
-        self.ChairLength.setObjectName("ChairLength")
-        self.verticalLayout_9.addWidget(self.ChairLength)
-        self.label_26 = QtGui.QLabel(self.layoutWidget)
-        self.label_26.setObjectName("label_26")
-        self.verticalLayout_9.addWidget(self.label_26)
-        self.ChairHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.ChairHeight.setMaximum(10)
-        self.ChairHeight.setObjectName("ChairHeight")
-        self.verticalLayout_9.addWidget(self.ChairHeight)
-        self.gridLayout.addLayout(self.verticalLayout_9, 7, 1, 1, 1)
-        self.verticalLayout_12 = QtGui.QVBoxLayout()
-        self.verticalLayout_12.setObjectName("verticalLayout_12")
-        self.label_34 = QtGui.QLabel(self.layoutWidget)
-        self.label_34.setObjectName("label_34")
-        self.verticalLayout_12.addWidget(self.label_34)
-        self.WallLightHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.WallLightHeight.setMaximum(10)
-        self.WallLightHeight.setObjectName("WallLightHeight")
-        self.verticalLayout_12.addWidget(self.WallLightHeight)
-        self.gridLayout.addLayout(self.verticalLayout_12, 3, 2, 1, 1)
-        self.verticalLayout_14 = QtGui.QVBoxLayout()
-        self.verticalLayout_14.setObjectName("verticalLayout_14")
-        self.label_33 = QtGui.QLabel(self.layoutWidget)
-        self.label_33.setObjectName("label_33")
-        self.verticalLayout_14.addWidget(self.label_33)
-        self.HandleLength = QtGui.QSpinBox(self.layoutWidget)
-        self.HandleLength.setMaximum(10)
-        self.HandleLength.setObjectName("HandleLength")
-        self.verticalLayout_14.addWidget(self.HandleLength)
-        self.gridLayout.addLayout(self.verticalLayout_14, 5, 1, 1, 1)
-        self.verticalLayout_13 = QtGui.QVBoxLayout()
-        self.verticalLayout_13.setObjectName("verticalLayout_13")
-        self.label_29 = QtGui.QLabel(self.layoutWidget)
-        self.label_29.setObjectName("label_29")
-        self.verticalLayout_13.addWidget(self.label_29)
-        self.LampHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.LampHeight.setMaximum(10)
-        self.LampHeight.setObjectName("LampHeight")
-        self.verticalLayout_13.addWidget(self.LampHeight)
-        self.gridLayout.addLayout(self.verticalLayout_13, 5, 2, 1, 1)
-        self.BookshelfButton = QtGui.QPushButton(self.layoutWidget)
-        self.BookshelfButton.setObjectName("BookshelfButton")
-        self.gridLayout.addWidget(self.BookshelfButton, 2, 0, 1, 1)
-        self.LampButton = QtGui.QPushButton(self.layoutWidget)
-        self.LampButton.setObjectName("LampButton")
-        self.gridLayout.addWidget(self.LampButton, 4, 2, 1, 1)
-        self.label_2 = QtGui.QLabel(self.layoutWidget)
-        self.label_2.setObjectName("label_2")
-        self.gridLayout.addWidget(self.label_2, 13, 1, 1, 1)
-        self.RefrigeratorButton = QtGui.QPushButton(self.layoutWidget)
-        self.RefrigeratorButton.setObjectName("RefrigeratorButton")
-        self.gridLayout.addWidget(self.RefrigeratorButton, 6, 2, 1, 1)
-        self.verticalLayout_15 = QtGui.QVBoxLayout()
-        self.verticalLayout_15.setObjectName("verticalLayout_15")
-        self.label_35 = QtGui.QLabel(self.layoutWidget)
-        self.label_35.setObjectName("label_35")
-        self.verticalLayout_15.addWidget(self.label_35)
-        self.RefrigeratorWidth = QtGui.QSpinBox(self.layoutWidget)
-        self.RefrigeratorWidth.setMaximum(10)
-        self.RefrigeratorWidth.setObjectName("RefrigeratorWidth")
-        self.verticalLayout_15.addWidget(self.RefrigeratorWidth)
-        self.label_36 = QtGui.QLabel(self.layoutWidget)
-        self.label_36.setObjectName("label_36")
-        self.verticalLayout_15.addWidget(self.label_36)
-        self.RefrigeratorLength = QtGui.QSpinBox(self.layoutWidget)
-        self.RefrigeratorLength.setMaximum(10)
-        self.RefrigeratorLength.setObjectName("RefrigeratorLength")
-        self.verticalLayout_15.addWidget(self.RefrigeratorLength)
-        self.label_37 = QtGui.QLabel(self.layoutWidget)
-        self.label_37.setObjectName("label_37")
-        self.verticalLayout_15.addWidget(self.label_37)
-        self.RefrigeratorHeight = QtGui.QSpinBox(self.layoutWidget)
-        self.RefrigeratorHeight.setMaximum(10)
-        self.RefrigeratorHeight.setObjectName("RefrigeratorHeight")
-        self.verticalLayout_15.addWidget(self.RefrigeratorHeight)
-        self.gridLayout.addLayout(self.verticalLayout_15, 7, 2, 1, 1)
-        self.gridLayout_3.addLayout(self.gridLayout, 1, 0, 1, 1)
-        self.verticalLayout_2 = QtGui.QVBoxLayout()
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.gridLayout_2 = QtGui.QGridLayout()
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.label_8 = QtGui.QLabel(self.layoutWidget)
-        self.label_8.setObjectName("label_8")
-        self.gridLayout_2.addWidget(self.label_8, 0, 2, 1, 1)
-        self.label_6 = QtGui.QLabel(self.layoutWidget)
-        self.label_6.setObjectName("label_6")
-        self.gridLayout_2.addWidget(self.label_6, 0, 0, 1, 1)
-        self.label_7 = QtGui.QLabel(self.layoutWidget)
-        self.label_7.setText("")
-        self.label_7.setObjectName("label_7")
-        self.gridLayout_2.addWidget(self.label_7, 0, 1, 1, 1)
-        self.verticalLayout_2.addLayout(self.gridLayout_2)
-        self.gridLayout_3.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
-        RoomArranger.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(RoomArranger)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 545, 25))
-        self.menubar.setObjectName("menubar")
-        self.menuRoom_Arranger_Gui = QtGui.QMenu(self.menubar)
-        self.menuRoom_Arranger_Gui.setObjectName("menuRoom_Arranger_Gui")
-        RoomArranger.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(RoomArranger)
-        self.statusbar.setObjectName("statusbar")
-        RoomArranger.setStatusBar(self.statusbar)
-        self.menubar.addAction(self.menuRoom_Arranger_Gui.menuAction())
+        self.LampButton.clicked.connect(self.make_Lamp)
+        self.LampHeight.valueChanged.connect(self.changeLampHeight)
 
-        self.retranslateUi(RoomArranger)
-        QtCore.QMetaObject.connectSlotsByName(RoomArranger)
+        self.WallLightButton.clicked.connect(self.make_WallLight)
+        self.WallLightHeight.valueChanged.connect(self.changeWallLightHeight)
 
-    def retranslateUi(self, RoomArranger):
-        RoomArranger.setWindowTitle(QtGui.QApplication.translate("RoomArranger", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
-        self.MicrowaveButton.setText(QtGui.QApplication.translate("RoomArranger", "Microwave", None, QtGui.QApplication.UnicodeUTF8))
-        self.WallLightButton.setText(QtGui.QApplication.translate("RoomArranger", "Wall Light", None, QtGui.QApplication.UnicodeUTF8))
-        self.ClosetButton.setText(QtGui.QApplication.translate("RoomArranger", "Closet", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(0, QtGui.QApplication.translate("RoomArranger", "Default", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(1, QtGui.QApplication.translate("RoomArranger", "Plastic", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(2, QtGui.QApplication.translate("RoomArranger", "Earth", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(3, QtGui.QApplication.translate("RoomArranger", "Diffuse", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(4, QtGui.QApplication.translate("RoomArranger", "Emissive", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(5, QtGui.QApplication.translate("RoomArranger", "Unshaded", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(6, QtGui.QApplication.translate("RoomArranger", "Shiny", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(7, QtGui.QApplication.translate("RoomArranger", "Chrome", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(8, QtGui.QApplication.translate("RoomArranger", "Blazed", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(9, QtGui.QApplication.translate("RoomArranger", "Earth with Clouds", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(10, QtGui.QApplication.translate("RoomArranger", "Brick", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(11, QtGui.QApplication.translate("RoomArranger", "Silver", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(12, QtGui.QApplication.translate("RoomArranger", "Wood", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(13, QtGui.QApplication.translate("RoomArranger", "Rough", None, QtGui.QApplication.UnicodeUTF8))
-        self.MaterialBox.setItemText(14, QtGui.QApplication.translate("RoomArranger", "Marble", None, QtGui.QApplication.UnicodeUTF8))
-        self.DeskButton.setText(QtGui.QApplication.translate("RoomArranger", "Desk", None, QtGui.QApplication.UnicodeUTF8))
-        self.PosterButton.setText(QtGui.QApplication.translate("RoomArranger", "Poster", None, QtGui.QApplication.UnicodeUTF8))
-        self.TableButton.setText(QtGui.QApplication.translate("RoomArranger", "Table", None, QtGui.QApplication.UnicodeUTF8))
-        self.HandleButton.setText(QtGui.QApplication.translate("RoomArranger", "Handle", None, QtGui.QApplication.UnicodeUTF8))
-        self.ChairButton.setText(QtGui.QApplication.translate("RoomArranger", "Chair", None, QtGui.QApplication.UnicodeUTF8))
-        self.OlinChairButton.setText(QtGui.QApplication.translate("RoomArranger", "Olin Chair", None, QtGui.QApplication.UnicodeUTF8))
-        self.BedButton.setText(QtGui.QApplication.translate("RoomArranger", "Bed", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_30.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_31.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_32.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_10.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_13.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_18.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_19.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_20.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_21.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_22.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_23.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_27.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_28.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_24.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_25.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_26.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_34.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_33.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_29.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.BookshelfButton.setText(QtGui.QApplication.translate("RoomArranger", "Bookshelf", None, QtGui.QApplication.UnicodeUTF8))
-        self.LampButton.setText(QtGui.QApplication.translate("RoomArranger", "Lamp", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("RoomArranger", "Materials", None, QtGui.QApplication.UnicodeUTF8))
-        self.RefrigeratorButton.setText(QtGui.QApplication.translate("RoomArranger", "Refrigerator", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_35.setText(QtGui.QApplication.translate("RoomArranger", "Width", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_36.setText(QtGui.QApplication.translate("RoomArranger", "Length", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_37.setText(QtGui.QApplication.translate("RoomArranger", "Height", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setText(QtGui.QApplication.translate("RoomArranger", "Electronics", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("RoomArranger", "Furniture", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuRoom_Arranger_Gui.setTitle(QtGui.QApplication.translate("RoomArranger", "Room Arranger Gui", None, QtGui.QApplication.UnicodeUTF8))
+        self.PosterButton.clicked.connect(self.make_Poster)
+        self.PosterWidth.valueChanged.connect(self.changePosterWidth)
+        self.PosterLength.valueChanged.connect(self.changePosterLength)
+
+        self.HandleButton.clicked.connect(self.make_Handle)
+        self.HandleLength.valueChanged.connect(self.changeHandleLength)
+
+        self.OlinChairButton.clicked.connect(self.make_Olin_Chair)
+
+        self.ChairButton.clicked.connect(self.make_Chair)
+        self.ChairWidth.valueChanged.connect(self.changeChairWidth)
+        self.ChairLength.valueChanged.connect(self.changeChairLength)
+        self.ChairHeight.valueChanged.connect(self.changeChairHeight)
+
+        self.RefrigeratorButton.clicked.connect(self.make_Refrigerator)
+        self.RefrigeratorWidth.valueChanged.connect(self.changeRefrigeratorWidth)
+        self.RefrigeratorLength.valueChanged.connect(self.changeRefrigeratorLength)
+        self.RefrigeratorHeight.valueChanged.connect(self.changeRefrigeratorHeight)
+
+        self.BedButton.clicked.connect(self.make_Bed)
+        self.BedWidth.valueChanged.connect(self.changeBedWidth)
+        self.BedLength.valueChanged.connect(self.changeBedLength)
+        self.BedHeight.valueChanged.connect(self.changeBedHeight)
+
+        self.BookshelfButton.clicked.connect(self.make_Bookshelf)
+        self.BookshelfWidth.valueChanged.connect(self.changeBookshelfWidth)
+        self.BookshelfLength.valueChanged.connect(self.changeBookshelfLength)
+        self.BookshelfHeight.valueChanged.connect(self.changeBookshelfHeight)
+
+        self.ClosetButton.clicked.connect(self.make_Closet)
+        self.ClosetWidth.valueChanged.connect(self.changeClosetWidth)
+        self.ClosetLength.valueChanged.connect(self.changeClosetLength)
+        self.ClosetHeight.valueChanged.connect(self.changeClosetHeight)
+
+        self.DeskButton.clicked.connect(self.make_Desk)
+        self.DeskWidth.valueChanged.connect(self.changeDeskWidth)
+        self.DeskLength.valueChanged.connect(self.changeDeskLength)
+        self.DeskHeight.valueChanged.connect(self.changeDeskHeight)
+
+
+        def oscillate():
+            while(True):
+                self.startingRoom.handler()
+                sleep(.1)        
+        oscillatingThread = Thread(target=oscillate)
+        oscillatingThread.start()
+
+    
+    def make_Microwave(self):
+        mw=Microwave(self.startingRoom,self.defaultsDict['Microwave'][0],self.defaultsDict['Microwave'][1],self.defaultsDict['Microwave'][2])
+        
+    def make_WallLight(self,):
+        wl=WallLight(self.startingRoom,self.defaultsDict['WallLight'][0])
+
+    def make_Desk(self):
+        d=Desk(self.startingRoom)
+
+    def make_Poster(self):
+        p=Poster(self.startingRoom,self.defaultsDict['Poster'][0],self.defaultsDict['Poster'][1])
+
+    def make_Handle(self):
+        h=Handle(self.startingRoom)
+
+    def make_Olin_Chair(self):
+        oc=Olin_Chair(self.startingRoom)
+
+    def make_Table(self):
+        t=Table(self.startingRoom,self.defaultsDict['Table'][0],self.defaultsDict['Table'][1],self.defaultsDict['Table'][2])
+        
+    def make_Chair(self):
+        c=Chair(self.startingRoom)
+        
+    def make_Refrigerator(self):
+        r=Refrigerator(self.startingRoom)
+       
+    def make_Bed(self):
+        b=Bed(self.startingRoom)
+    
+    def make_Bookshelf(self):
+        bs = BookShelf(self.startingRoom)
+
+    def make_Closet(self):
+       cl=Closet(self.startingRoom)
+
+    def make_Lamp(self):
+        l=Lamp(self.startingRoom,self.defaultsDict['Table'][0])
+
+
+    def changeTableWidth(self,decimal):
+        if decimal>0:
+           self.defaultsDict['Table'][0]=decimal
+        else:
+            pass        
+    def changeTableHeight(self,decimal):
+        if decimal>0:
+           self.defaultsDict['Table'][1]=decimal
+        else:
+            pass      
+    def changeTableLength(self,decimal):
+        if decimal>0:
+           self.defaultsDict['Table'][2]=decimal
+        else:
+            pass                
+
+    def changeMicrowaveWidth(self,decimal):
+        if decimal>0:
+           self.defaultsDict['Microwave'][0]=decimal
+        else:
+            pass        
+    def changeMicrowaveHeight(self,decimal):
+        if decimal>0:
+           self.defaultsDict['Microwave'][1]=decimal
+        else:
+            pass      
+    def changeMicrowaveLength(self,decimal):
+        if decimal>0:
+           self.defaultsDict['Microwave'][2]=decimal
+        else:
+            pass
+
+    def changeLampHeight(self,decimal):
+        if decimal>0:
+            self.defualtsDict['Lamp'][0]=decimal
+        else:
+            pass
+
+    def changeWallLightHeight(self,decimal):
+        if decimal>0:
+            self.defaultsDict['WallLight'][0]=decimal
+        else:
+            pass
+        
+    def changePosterWidth(self,decimal):
+        if decimal>0:
+            self.defaultsDict['WallLight'][0]=decimal
+        else:
+            pass
+    def changePosterLength(self,decimal):
+        if decimal>0:
+            self.defaultsDict['WallLight'][0]=decimal
+        else:
+            pass
+
+    def changeHandleLength():
+        if decimal>0:
+            self.defaultsDict['Handle'][0]=decimal
+        else:
+            pass
+
+    def changeChairWidth():
+        if decimal>0:
+            self.defaultsDict['Chair'][0]=decimal
+        else:
+            pass
+    def changeChairLength():
+        if decimal>0:
+            self.defaultsDict['Chair'][1]=decimal
+        else:
+            pass
+    def changeChairHeight():
+        if decimal>0:
+            self.defaultsDict['Chair'][2]=decimal
+        else:
+            pass
+
+    def changeRefrigeratorWidth():
+        if decimal>0:
+            self.defaultsDict['Refrigerator'][0]=decimal
+        else:
+            pass
+    def changeRefrigeratorLength():
+        if decimal>0:
+            self.defaultsDict['Refrigerator'][1]=decimal
+        else:
+            pass
+    def changeRefrigeratorHeight():
+        if decimal>0:
+            self.defaultsDict['Refrigerator'][2]=decimal
+        else:
+            pass
+
+    def changeBedWidth():
+        if decimal>0:
+            self.defaultsDict['Bed'][0]=decimal
+        else:
+            pass
+    def changeBedLength():
+        if decimal>0:
+            self.defaultsDict['Bed'][1]=decimal
+        else:
+            pass
+    def changeBedHeight():
+        if decimal>0:
+            self.defaultsDict['Bed'][2]=decimal
+        else:
+            pass
+
+    def changeBookshelfWidth():
+        if decimal>0:
+            self.defaultsDict['Bookshelf'][0]=decimal
+        else:
+            pass
+    def changeBookshelfLength():
+        if decimal>0:
+            self.defaultsDict['Bookshelf'][1]=decimal
+        else:
+            pass
+    def changeBookshelfHeight():
+        if decimal>0:
+            self.defaultsDict['Bookshelf'][2]=decimal
+        else:
+            pass
+
+    def changeClosetWidth():
+        if decimal>0:
+            self.defaultsDict['Closet'][0]=decimal
+        else:
+            pass
+    def changeClosetLength():
+        if decimal>0:
+            self.defaultsDict['Closet'][1]=decimal
+        else:
+            pass
+    def changeClosetHeight():
+        if decimal>0:
+            self.defaultsDict['Closet'][2]=decimal
+        else:
+            pass
+
+    def changeDeskWidth():
+        if decimal>0:
+            self.defaultsDict['Desk'][0]=decimal
+        else:
+            pass
+    def changeDeskLength():
+        if decimal>0:
+            self.defaultsDict['Desk'][1]=decimal
+        else:
+            pass
+    def changeDeskHeight():
+        if decimal>0:
+            self.defaultsDict['Desk'][2]=decimal
+        else:
+            pass
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    frame = MainWindow()
+    frame.startingRoom.shouldRun = True
+    frame.show()
+
+    app.exec_()    
 
