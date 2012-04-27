@@ -808,8 +808,8 @@ class Olin_Chair(Furniture):
                                         color = (0,0,0), frame = self.Container))
 
 
-#room1 = DormRoom()
-#test1 = Refrigerator(room1)
+room1 = DormRoom()
+test1 = Refrigerator(room1)
 #test2 = Desk(room1)
 
 #global posterimage
@@ -827,9 +827,9 @@ class Olin_Chair(Furniture):
 #test13 = Olin_Chair(room1)
 
 
-#while True:
-#    rate(20)
-#    room1.walls_view()
-#    room1.handler()
+while True:
+    rate(20)
+    room1.walls_view()
+    room1.handler()
     
 
