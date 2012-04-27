@@ -584,6 +584,9 @@ class Desk(Furniture):
 
 class Poster(Furniture):
     def __init__(self, Room, Length, Height, Width = 0.01, Position = [.05,.05,5]):
+        ##TODO Make the poster image a parameter##
+
+        posterimage = "mhcposter"
         posterdata = materials.loadTGA(posterimage)
         postertex = materials.texture(data = posterdata, mapping="sign")
         Furniture.__init__(self, Room, Width, Length, Height, Position)
@@ -805,7 +808,7 @@ class Olin_Chair(Furniture):
                                         color = (0,0,0), frame = self.Container))
 
 
-room1 = DormRoom()
+#room1 = DormRoom()
 #test1 = Refrigerator(room1)
 #test2 = Desk(room1)
 
@@ -821,12 +824,12 @@ room1 = DormRoom()
 #test10 = Lamp(room1)
 #test11 = Closet(room1)
 #test12 = WallLight(room1)
-test13 = Olin_Chair(room1)
+#test13 = Olin_Chair(room1)
 
 
-while True:
-    rate(20)
-    room1.walls_view()
-    room1.handler()
+#while True:
+#    rate(20)
+#    room1.walls_view()
+#    room1.handler()
     
 
