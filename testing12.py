@@ -314,16 +314,17 @@ class Furniture:
 
     def Gravity(self, floor):
         while True:
-            try:
-                for part in self.ObjectList:
-                    if self.Collide.has_intersect_z(part,floor):
-                        return
+            for part in self.ObjectList:
+                if self.Collide.has_intersect_z(part,floor):
+                    print part
+                    return
+                try:
                     if part.pos.z < -5:
                         return
-            except:
-                pass
+                except:
+                    pass
             for part in self.ObjectList:
-                part.pos -= vector(0,0,.001)
+                part.pos -= vector(0,0,.002)
     
 
     def move(self,k):
@@ -442,7 +443,8 @@ class Bed(Furniture):
         self.FootBoard = extrusion(pos = [(self.Foot_Start),(self.Foot_End)],
                                    shape = self.Head_Shape, frame = self.Container,
                                    color = self.Wood_Color, material = materials.wood)
-        self.ObjectList = [self.Mattress, self.HeadBoard, self.FootBoard]
+        self.BoundingBoxZ = box(pos = self.Pos/2., size = (self.Width,self.Length,self.Height+1.3),visible = False)
+        self.ObjectList = [self.Mattress, self.HeadBoard, self.FootBoard,self.BoundingBoxZ]
 
 class BookShelf(Furniture):
     def __init__(self, Room, Width = 2.5, Length=1.25, Height=2.25, Shelf_Number=2, Wood_Thickness = 0.0583,\
