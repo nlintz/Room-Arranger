@@ -17,8 +17,8 @@
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>220</y>
+      <x>10</x>
+      <y>0</y>
       <width>361</width>
       <height>931</height>
      </rect>
@@ -712,11 +712,7 @@
       </item>
      </layout>
     </widget>
-    <zorder>layoutWidget</zorder>
-    <zorder>layoutWidget</zorder>
    </widget>
-   <zorder></zorder>
-   <zorder>frame</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
