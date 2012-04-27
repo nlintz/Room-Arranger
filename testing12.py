@@ -186,7 +186,7 @@ class Room(object):
                     self.rotate_view(k)
             if k=='g':
                 if self.Selected:
-                    self.Selected.Gravity(self.ObjectList[0].ObjectList[0])
+                    self.Selected.gravity(self.ObjectList[0].ObjectList[0])
         for thing in self.ObjectList[1:]: #if an object is picked, or is currently being dragged or turned, call drag (currently a little buggy - try it out and you'll see what i mean)
             picked= False
             for part in thing.ObjectList:
@@ -312,7 +312,7 @@ class Furniture:
             self.Pos = Position
         Room.ObjectList = Room.ObjectList + [self]
 
-    def Gravity(self, floor):
+    def gravity(self, floor):
         while True:
             for part in self.ObjectList:
                 if self.Collide.has_intersect_z(part,floor):
@@ -324,7 +324,7 @@ class Furniture:
                 except:
                     pass
             for part in self.ObjectList:
-                part.pos -= vector(0,0,.002)
+                part.pos -= vector(0,0,.005)
     
 
     def move(self,k):
@@ -443,8 +443,13 @@ class Bed(Furniture):
         self.FootBoard = extrusion(pos = [(self.Foot_Start),(self.Foot_End)],
                                    shape = self.Head_Shape, frame = self.Container,
                                    color = self.Wood_Color, material = materials.wood)
-        self.BoundingBoxZ = box(pos = self.Pos/2., size = (self.Width,self.Length,self.Height+1.3),visible = False)
-        self.ObjectList = [self.Mattress, self.HeadBoard, self.FootBoard,self.BoundingBoxZ]
+        self.BoundingBoxFoot = box(pos = (self.Foot_Start + self.Foot_End)/2.,
+                                   size = (self.Width,abs(self.Foot_Start-self.Foot_End),self.Back_Height+2*self.Mattress_Thickness),
+                                   visible = False)
+        self.BoundingBoxHead = box(pos = (self.Head_Start + self.Head_End)/2.,
+                                   size = (self.Width,abs(self.Head_Start-self.Head_End),self.Back_Height+2*self.Mattress_Thickness),
+                                   visible = False)
+        self.ObjectList = [self.Mattress, self.HeadBoard, self.FootBoard,self.BoundingBoxFoot,self.BoundingBoxHead]
 
 class BookShelf(Furniture):
     def __init__(self, Room, Width = 2.5, Length=1.25, Height=2.25, Shelf_Number=2, Wood_Thickness = 0.0583,\
@@ -562,7 +567,9 @@ class Lamp(Furniture):
                                        radius  = self.Shade_Max_Radius, opacity = 0, frame = self.Container)
         self.Base_Cylinder = cylinder(pos = (0,0,0), axis = (0,0, self.Base_Height),
                                       radius = self.Base_Radius, opacity = 0, frame = self.Container)
-        self.ObjectList = [self.Stand, self.Lamp_Shade, self.Base, self.Light, self.Base_Cylinder, self.Shade_Cylinder]
+        self.BoundingBoxBase = cylinder(axis = (0,0,self.Base_Height), radius = self.Base_Radius/2.,
+                                        pos = (0,0,-self.Base_Height/2.), visible = False)
+        self.ObjectList = [self.Stand, self.Lamp_Shade, self.Base, self.Light, self.Base_Cylinder, self.Shade_Cylinder, self.BoundingBoxBase]
 
  
 class Handle(Furniture):
@@ -773,8 +780,10 @@ class Olin_Chair(Furniture):
         self.Rail_Origin = vector(0, -self.Arm_Rail_Offset,
                                   self.Spindle_Bottom_Height+self.Spindle_Middle_Height+
                                   self.Spindle_Top_Height)
-
-        self.ObjectList = [self.Spindle_Bottom, self.Spindle_Middle, self.Spindle_Top]
+        self.BoundingBoxBottom = cylinder(axis = (0,0,-2*self.Starting_Leg_Height-self.Wheel_Margin),
+                                          radius = self.Leg_Length+self.Wheel_Radius+self.Wheel_Margin,
+                                          visible = False)
+        self.ObjectList = [self.Spindle_Bottom, self.Spindle_Middle, self.Spindle_Top,self.BoundingBoxBottom]
 
         for x in range(0,2):
             if x == 0:
@@ -850,9 +859,9 @@ room1 = DormRoom()
 #posterimage = "mhcposter" #right now the choices are mhcposter, metacubeposter and flowerposter
 #test3 = Poster(room1, 3, 3)
 #test4 = BookShelf(room1)
-test5 = Drawers(room1)
+#test5 = Drawers(room1)
 #test6 = Table(room1)
-test7 = Bed(room1)
+#test7 = Bed(room1)
 #test8 = Chair(room1)
 #test9 = Microwave(room1)
 #test10 = Lamp(room1)
