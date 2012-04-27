@@ -2,7 +2,7 @@ from visual import *
 from visual.controls import *
 import math
 
-class Colliding:
+class Colliding: #Nothing in here but has_intersect_z is actually used
     def find_corners(self,*things):
         '''Find the corners you need to project on axes for the separating axis theorem.
             Works for boxes and cylinders only, and only in the xy plane (cylinders must be a circle in the xy plane).
@@ -147,6 +147,7 @@ class Room(object):
         self.ObjectList = [self.Walls] #add the walls to the object list - room object list should only contain things with an object list. Those object lists should only contain objects
 
     def handler(self): #take input, call interaction functions as appropriate
+        self.walls_view()
         if self.Display.mouse.events:
             m1 = self.Display.mouse.getevent() #get any mouse events
         else:
@@ -860,7 +861,6 @@ test7 = Bed(room1)
 
 while True:
     rate(20)
-    room1.walls_view()
     room1.handler()
     
 
