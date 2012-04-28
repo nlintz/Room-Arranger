@@ -323,23 +323,18 @@ class Furniture:
                         return
                 except:
                     pass
-            for part in self.ObjectList:
-                part.pos -= vector(0,0,.005)
+                self.Container.pos -= vector(0,0,.005)
     
 
     def move(self,k):
         if k=='up':
-            for part in self.ObjectList:
-                part.pos = part.pos + vector(0,1./3,0)
+                self.Container.pos -= vector(0,1./3,0)
         if k=='down':
-            for part in self.ObjectList:
-                part.pos = part.pos - vector(0,1./3,0)
+                self.Container.pos += vector(0,1./3,0)
         if k=='left':
-            for part in self.ObjectList:
-                part.pos = part.pos - vector(1./3,0,0)
+                self.Container.pos += vector(1./3,0,0)
         if k=='right':
-            for part in self.ObjectList:
-                part.pos = part.pos + vector(1./3,0,0)
+                self.Container.pos -= vector(1./3,0,0)
 
     def drag(self, room, m):
         drag, New_Pos, Drag_Pos, turn, Turn_Start, Turn_End, m1 = self.DragSettings
@@ -376,8 +371,7 @@ class Furniture:
             Move = New_Pos - Drag_Pos
             Drag_Pos = New_Pos #save new position
             #Move object to the new location
-            for part in self.ObjectList:
-                part.pos += Move
+            self.Container.pos += Move
             '''if self.Collide.collide_with_room(self, room):
                 for part in self.ObjectList:
                     part.pos -= Move'''
@@ -393,18 +387,17 @@ class Furniture:
             Distance = Turn_End.x - Turn_Start.x
             Turn_Start = Turn_End
             Spin = math.pi*(Distance/((self.Width+self.Length)))
-            self.Container.rotate(angle = Spin, axis = (0,0,1), origin = self.ObjectList[0].pos)
+            self.Container.rotate(angle = Spin, axis = (0,0,1), origin = self.Container.pos)
         self.DragSettings = (drag, New_Pos, Drag_Pos, turn, Turn_Start, Turn_End, m1)
         
     def Snap_To_Grid(self, scene):
-        Grid_X = int(self.ObjectList[0].pos.x/self.Grid_Resolution)
-        Grid_Y = int(self.ObjectList[0].pos.y/self.Grid_Resolution)
-        Grid_Z = int(self.ObjectList[0].pos.z/self.Grid_Resolution)
-        Move_Pos = vector(self.ObjectList[0].pos.x- Grid_X*self.Grid_Resolution, \
-                          self.ObjectList[0].pos.y- Grid_Y*self.Grid_Resolution, \
-                          self.ObjectList[0].pos.z- Grid_Z*self.Grid_Resolution,)
-        for part in self.ObjectList:
-            part.pos -= Move_Pos
+        Grid_X = int(self.Container.pos.x/self.Grid_Resolution)
+        Grid_Y = int(self.Container.pos.y/self.Grid_Resolution)
+        Grid_Z = int(self.Container.pos.z/self.Grid_Resolution)
+        Move_Pos = vector(self.Container.pos.x- Grid_X*self.Grid_Resolution, \
+                          self.Container.pos.y- Grid_Y*self.Grid_Resolution, \
+                          self.Container.pos.z- Grid_Z*self.Grid_Resolution,)
+        self.Container.pos -= Move_Pos
         self.picked = False
                         
                     
@@ -853,7 +846,7 @@ class Olin_Chair(Furniture):
 
 room1 = DormRoom()
 #test1 = Refrigerator(room1)
-#test2 = Desk(room1)
+test2 = Desk(room1)
 
 #global posterimage
 #posterimage = "mhcposter" #right now the choices are mhcposter, metacubeposter and flowerposter
