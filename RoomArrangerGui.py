@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Gui4.ui'
 #
-# Created: Fri Apr 27 11:38:47 2012
+# Created: Mon Apr 30 00:46:49 2012
 #      by: pyside-uic 0.2.11 running on PySide 1.1.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,15 +12,17 @@ from PySide import QtCore, QtGui
 class Ui_RoomArranger(object):
     def setupUi(self, RoomArranger):
         RoomArranger.setObjectName("RoomArranger")
-        RoomArranger.resize(545, 979)
+        RoomArranger.resize(545, 1002)
         self.centralwidget = QtGui.QWidget(RoomArranger)
         self.centralwidget.setObjectName("centralwidget")
-        self.frame = QtGui.QFrame(self.centralwidget)
-        self.frame.setGeometry(QtCore.QRect(10, 0, 521, 931))
-        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtGui.QFrame.Raised)
-        self.frame.setObjectName("frame")
-        self.layoutWidget = QtGui.QWidget(self.frame)
+        self.scrollArea = QtGui.QScrollArea(self.centralwidget)
+        self.scrollArea.setGeometry(QtCore.QRect(20, 20, 521, 961))
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtGui.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 519, 959))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.layoutWidget = QtGui.QWidget(self.scrollAreaWidgetContents)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 502, 909))
         self.layoutWidget.setObjectName("layoutWidget")
         self.gridLayout_3 = QtGui.QGridLayout(self.layoutWidget)
@@ -348,6 +350,7 @@ class Ui_RoomArranger(object):
         self.gridLayout_2.addWidget(self.label_7, 0, 1, 1, 1)
         self.verticalLayout_2.addLayout(self.gridLayout_2)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         RoomArranger.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(RoomArranger)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 545, 25))
