@@ -79,19 +79,27 @@ class Colliding: #Nothing in here but has_intersect_z is actually used
         try:
             while len(things) > 1:#while there remain two objects that have not been checked against each other
                 thing1 = things.pop(0)
+                try:
+                    center1 = thing1.frame.pos.z
+                except:
+                    center1 = 0
                 if thing1.__class__.__name__ == 'box':
-                    center1 = thing1.pos.z
+                    center1 += thing1.pos.z
                     dist1 = abs(.5*thing1.size.z) #the distance to the top and bottom from the center
                 elif thing1.__class__.__name__ == 'cylinder' and thing1.axis.x == 0 and thing1.axis.y == 0: #if this is a vertically oriented cylinder
                     dist1 = abs(.5*thing1.length)
-                    center1 = thing1.pos.z + (dist1 * (thing1.axis.z/abs(thing1.axis.z))) #the vertical center of the cylinder
+                    center1 += thing1.pos.z + (dist1 * (thing1.axis.z/abs(thing1.axis.z))) #the vertical center of the cylinder
                 for thing2 in things: #same as above
+                    try:
+                        center2 = thing2.frame.pos.z
+                    except:
+                        center2 = 0
                     if thing2.__class__.__name__ == 'box':
-                        center2 = thing2.pos.z
+                        center2 += thing2.pos.z
                         dist2 = abs(.5*thing2.size.z)
                     if thing2.__class__.__name__ == 'cylinder' and thing2.axis.x == 0 and thing1.axis.y == 0:
                         dist2 = abs(.5*thing2.length)
-                        center2 = thing2.pos.z + (dist2 * (thing2.axis.z/abs(thing2.axis.z)))
+                        center2 += thing2.pos.z + (dist2 * (thing2.axis.z/abs(thing2.axis.z)))
                     if center1+dist1-.01 > center2-dist2 and center1-dist1+.01 < center2+dist2: #If the two vertical spans are not disjoint
                         return True
             return False
@@ -319,7 +327,7 @@ class Furniture:
                     print part
                     return
                 try:
-                    if part.pos.z < -5:
+                    if part.pos.z + self.Container.pos.z < -5:
                         return
                 except:
                     pass
@@ -438,10 +446,10 @@ class Bed(Furniture):
                                    color = self.Wood_Color, material = materials.wood)
         self.BoundingBoxFoot = box(pos = (self.Foot_Start + self.Foot_End)/2.,
                                    size = (self.Width,abs(self.Foot_Start-self.Foot_End),self.Back_Height+2*self.Mattress_Thickness),
-                                   visible = False)
+                                   visible = False, frame = self.Container)
         self.BoundingBoxHead = box(pos = (self.Head_Start + self.Head_End)/2.,
                                    size = (self.Width,abs(self.Head_Start-self.Head_End),self.Back_Height+2*self.Mattress_Thickness),
-                                   visible = False)
+                                   visible = False, frame = self.Container)
         self.ObjectList = [self.Mattress, self.HeadBoard, self.FootBoard,self.BoundingBoxFoot,self.BoundingBoxHead]
 
 class BookShelf(Furniture):
@@ -561,7 +569,7 @@ class Lamp(Furniture):
         self.Base_Cylinder = cylinder(pos = (0,0,0), axis = (0,0, self.Base_Height),
                                       radius = self.Base_Radius, opacity = 0, frame = self.Container)
         self.BoundingBoxBase = cylinder(axis = (0,0,self.Base_Height), radius = self.Base_Radius/2.,
-                                        pos = (0,0,-self.Base_Height/2.), visible = False)
+                                        pos = (0,0,-self.Base_Height/2.), visible = False, frame = self.Container)
         self.ObjectList = [self.Stand, self.Lamp_Shade, self.Base, self.Light, self.Base_Cylinder, self.Shade_Cylinder, self.BoundingBoxBase]
 
  
@@ -684,7 +692,7 @@ class Chair(Table):
         Back_Y = self.Pos[1]+(self.Width/2.)-(self.Wood_Thickness/2.)
         Back_Z = self.Pos[2]+(self.Back_Height/2.)+(self.Wood_Thickness/2)
         self.Back = box(pos = (self.Pos[0], Back_Y, Back_Z),\
-                   size = (self.Width, self.Wood_Thickness, self.Back_Height), material = materials.silver)
+                   size = (self.Width, self.Wood_Thickness, self.Back_Height), material = materials.silver, frame = self.Container)
         self.ObjectList = self.ObjectList + [self.Back]
 
 class Microwave(Furniture):
@@ -775,7 +783,7 @@ class Olin_Chair(Furniture):
                                   self.Spindle_Top_Height)
         self.BoundingBoxBottom = cylinder(axis = (0,0,-2*self.Starting_Leg_Height-self.Wheel_Margin),
                                           radius = self.Leg_Length+self.Wheel_Radius+self.Wheel_Margin,
-                                          visible = False)
+                                          visible = False, frame = self.Container)
         self.ObjectList = [self.Spindle_Bottom, self.Spindle_Middle, self.Spindle_Top,self.BoundingBoxBottom]
 
         for x in range(0,2):
@@ -846,7 +854,7 @@ class Olin_Chair(Furniture):
 
 room1 = DormRoom()
 #test1 = Refrigerator(room1)
-test2 = Desk(room1)
+#test2 = Desk(room1)
 
 #global posterimage
 #posterimage = "mhcposter" #right now the choices are mhcposter, metacubeposter and flowerposter
@@ -855,7 +863,7 @@ test2 = Desk(room1)
 #test5 = Drawers(room1)
 #test6 = Table(room1)
 #test7 = Bed(room1)
-#test8 = Chair(room1)
+test8 = Chair(room1)
 #test9 = Microwave(room1)
 #test10 = Lamp(room1)
 #test11 = Closet(room1)
