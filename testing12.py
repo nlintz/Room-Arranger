@@ -138,7 +138,7 @@ class Colliding: #Nothing in here but has_intersect_z is actually used
         return False
 
 class Room(object):
-    def __init__(self,width=15,height=10,length=12,ambient=0.2,lights=[0.5*norm(vector(0,0,-2)),0.25*norm(vector(0,0.5,2))],autoscale=False,walls=True):
+    def __init__(self,width=14.5,height=10,length=20,ambient=0.2,lights=[0.5*norm(vector(0,0,-2)),0.25*norm(vector(0,0.5,2))],autoscale=False,walls=True):
         self.Width = width
         self.Height = height
         self.Length = length
@@ -259,26 +259,61 @@ class Room(object):
 
 class Walls: #class only to be called by room function to create walls
     def __init__(self,width, height, length, walls): #width = x, height = z, length = y, walls = boolean
-        self.Floor = box(pos=(width/2.,length/2.,0), axis = (1,0,0), size=(width,length,.01), color=(.5,.25,.15))
+        self.WallThickness = 0.425
+        self.Floor = box(pos=(width/2.,length/2.,0), axis = (1,0,0), size=(width,length,self.WallThickness), color=(.5,.25,.15))
         self.ObjectList = [self.Floor]
         if walls:
-            self.Ceiling = box(pos=(width/2.,length/2.,height), axis = (1,0,0), size=(width,length,.01))
-            self.NorthWall = box(pos=(width/2.,0,height/2.), axis=(1,0,0), size = (width,.01,height))
-            self.EastWall = box(pos=(width,length/2.,height/2.), axis=(1,0,0), size = (.01,length,height))
-            self.SouthWall = box(pos=(width/2.,length,height/2.), axis=(1,0,0), size = (width,.01,height))
-            self.WestWall = box(pos=(0,length/2.,height/2.), axis=(1,0,0),size = (.01,length,height))
+            self.Ceiling = box(pos=(width/2.,length/2.,height), axis = (1,0,0), size=(width,length,self.WallThickness))
+            self.NorthWall = box(pos=(width/2.,0,height/2.), axis=(1,0,0), size = (width,self.WallThickness,height))
+            self.EastWall = box(pos=(width,length/2.,height/2.), axis=(1,0,0), size = (self.WallThickness,length,height))
+            self.SouthWall = box(pos=(width/2.,length,height/2.), axis=(1,0,0), size = (width,self.WallThickness,height))
+            self.WestWall = box(pos=(0,length/2.,height/2.), axis=(1,0,0),size = (self.WallThickness,length,height))
             self.ObjectList = self.ObjectList + [self.Ceiling,self.NorthWall,self.EastWall,self.SouthWall,self.WestWall]
 
 
-class DormRoom(Room):
+class RightDormRoom(Room):
     def __init__(self):
-        Room.__init__(self, length = 18)
-        self.Walls.DivWall1 = box(pos=(self.Width-4.5,12,self.Height/2.), axis=(1,0,0), size = (9,.01,self.Height))
-        self.Walls.DivWall2 = box(pos=(1.5,12,self.Height/2.), axis=(1,0,0), size = (3,.01,self.Height),)
-        self.Walls.SinkBack = box(pos=(self.Width-7,self.Length-4.5,self.Height/2.), axis=(1,0,0), size = (.01,3,self.Height))
-        self.Walls.SinkSide = box(pos=(self.Width-8,self.Length-3,self.Height/2.), axis=(1,0,0), size = (2,.01,self.Height))
-        self.Walls.Sink = box(pos=(self.Width-8,self.Length-4.5,2.), axis=(1,0,0), size = (2,3,4))
-        self.Walls.Window = box(pos=(self.Width/2.,0.01,6), axis=(1,0,0), size = (4.5,.01,5.5), color=color.yellow, material = materials.emissive)
+        Room.__init__(self)
+        self.WallThickness = 0.425
+        self.Walls.DivWall1 = box(pos=(self.Width-4,13,self.Height/2.), axis=(1,0,0), size = (8,self.WallThickness,self.Height))
+        self.Walls.DivWall2 = box(pos=(1.75,13,self.Height/2.), axis=(1,0,0), size = (3.5,self.WallThickness,self.Height),)
+        self.Walls.SinkBack = box(pos=(self.Width-8+2.1,13+1.4,self.Height/2.), axis=(1,0,0), size = (self.WallThickness,2.8,self.Height))
+        self.Walls.SinkSide = box(pos=(self.Width-8+2.1/2,13+2.8-self.WallThickness/2.,self.Height/2.), axis=(1,0,0), size = (2.1,self.WallThickness,self.Height))
+        self.Walls.Sink = box(pos=(self.Width-8+1.05,13+1.4,1.4), axis=(1,0,0), size = (2.1,2.8,2.8))
+        self.Walls.Window = box(pos=(self.Width/2.,0.01,4.55), axis=(1,0,0), size = (4.5,self.WallThickness,7.15), color=color.yellow, material = materials.emissive)
+        self.Walls.ObjectList = self.Walls.ObjectList + [self.Walls.DivWall1,self.Walls.DivWall2,self.Walls.SinkBack,self.Walls.SinkSide,self.Walls.Sink,self.Walls.Window]
+    def walls_view(self):
+        if self.Display.forward.x>.29:
+            self.Walls.WestWall.visible = False
+            self.Walls.EastWall.visible = True
+        if self.Display.forward.x<-.29:
+            self.Walls.EastWall.visible = False
+            self.Walls.WestWall.visible = True
+        if self.Display.forward.y>.21:
+            self.Walls.NorthWall.visible = False
+            self.Walls.Window.visible = False
+            self.Walls.SouthWall.visible = True
+        if self.Display.forward.y<-.21:
+            self.Walls.SouthWall.visible = False
+            self.Walls.NorthWall.visible = True
+            self.Walls.Window.visible = True
+        if self.Display.forward.z>0.35:
+            self.Walls.Floor.visible = False
+            self.Walls.Ceiling.visible = True
+        if self.Display.forward.z<0.35:
+            self.Walls.Ceiling.visible = False
+            self.Walls.Floor.visible = True
+
+class LeftDormRoom(Room):
+    def __init__(self):
+        Room.__init__(self)
+        self.WallThickness = 0.425
+        self.Walls.DivWall1 = box(pos=(4,13,self.Height/2.), axis=(1,0,0), size = (8,self.WallThickness,self.Height))
+        self.Walls.DivWall2 = box(pos=(self.Width-1.75,13,self.Height/2.), axis=(1,0,0), size = (3.5,self.WallThickness,self.Height),)
+        self.Walls.SinkBack = box(pos=(8-2.1,13+1.4,self.Height/2.), axis=(1,0,0), size = (self.WallThickness,2.8,self.Height))
+        self.Walls.SinkSide = box(pos=(8-2.1/2,13+2.8-self.WallThickness/2.,self.Height/2.), axis=(1,0,0), size = (2.1,self.WallThickness,self.Height))
+        self.Walls.Sink = box(pos=(8-1.05,13+1.4,1.4), axis=(1,0,0), size = (2.1,2.8,2.8))
+        self.Walls.Window = box(pos=(self.Width/2.,0.01,4.55), axis=(1,0,0), size = (4.5,self.WallThickness,7.15), color=color.yellow, material = materials.emissive)
         self.Walls.ObjectList = self.Walls.ObjectList + [self.Walls.DivWall1,self.Walls.DivWall2,self.Walls.SinkBack,self.Walls.SinkSide,self.Walls.Sink,self.Walls.Window]
     def walls_view(self):
         if self.Display.forward.x>.29:
@@ -852,7 +887,7 @@ class Olin_Chair(Furniture):
                                         color = (0,0,0), frame = self.Container))
 
 
-room1 = DormRoom()
+room1 = LeftDormRoom()
 #test1 = Refrigerator(room1)
 #test2 = Desk(room1)
 
