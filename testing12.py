@@ -528,7 +528,7 @@ class BookShelf(Furniture):
 class Closet(BookShelf):
     def __init__(self, Room, Width=3, Length=1.85, Height=6.25, Material=materials.wood, Wood_Thickness=.1, Hanger_Height = None, Open = True,
                  Position = [],Wood_Color = (1,.9,.5), Hanger_Radius = 1./12):
-        BookShelf.__init__(self, Room, Width, Length, Height, 1, Wood_Thickness,
+        BookShelf.__init__(self, Room, Width, Length, Height, Material, 1, Wood_Thickness,
                            Position, Wood_Color)
         self.Open = Open
         self.Hanger_Radius = Hanger_Radius
@@ -615,7 +615,11 @@ class Handle(Furniture):
     #Furniture_Base is the object that this will be added to.
     def __init__(self, Room, Furniture_Base, Length=.5, Material=materials.wood, Handle_Orientation = (0,0,1),Clearance = 3./12, Handle_Radius = 0.5/12,
                  Strut_Radius = 0.5/12, Strut_Orientation = (0,1,0), Position = []):
-        Furniture.__init__(self, Room, 1, Length, 1, Position)
+        Furniture.__init__(self, Room, Width, Length, Height, Position)
+        #TODO fix this class
+        print type(self.Length)
+
+        self.Material=Material
         self.Handle_Orientation = Handle_Orientation
         self.Strut_Orientation = Strut_Orientation
         self.Clearance = Clearance
@@ -626,6 +630,7 @@ class Handle(Furniture):
         self.Strut_Axis = vector(0,0,0)
         self.Main_Axis = vector(0,0,0)
         self.Handle_Pos = vector(0,0,0)
+        print type(self.Length)
         for i in range(0, 3):
             if self.Strut_Orientation[i] != 0:
                 self.Clearance_Offset[i] = -self.Strut_Orientation[i]*self.Clearance
@@ -721,7 +726,7 @@ class Table(Furniture):
                         
 class Chair(Table):
     def __init__(self,Room, Width=2, Length=2, Stool_Height=1.8, Material=materials.silver, Back_Height=2, Wood_Thickness=.1, Position = [],):
-        Table.__init__(self, Room, Width, Length, Stool_Height, Wood_Thickness, Position)
+        Table.__init__(self, Room, Width, Length, Material, Stool_Height, Wood_Thickness, Position)
         self.Back_Height = Back_Height
         self.Seat_Color = (255, 255, 0)
         self.Back_Color = (0, 255, 255)
