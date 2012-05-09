@@ -464,6 +464,7 @@ class Bed(Furniture):
         self.Sheet_Color = Sheet_Color
         self.Wood_Thickness = Wood_Thickness
         self.Wood_Color = Wood_Color
+        self.Material=Material
         self.Mattress = box(pos = (self.Pos), size = (self.Width, self.Length, self.Mattress_Thickness), \
                          color = self.Sheet_Color, frame = self.Container)
         self.Head_Start = self.Pos+vector(0, self.Length/2.+self.Wood_Thickness/2., self.Back_Height/2.- self.Height)
@@ -488,13 +489,14 @@ class Bed(Furniture):
         self.ObjectList = [self.Mattress, self.HeadBoard, self.FootBoard,self.BoundingBoxFoot,self.BoundingBoxHead]
 
 class BookShelf(Furniture):
-    def __init__(self, Room, Width = 2.5, Length=1.25, Height=2.25, Material=materials.wood, Shelf_Number=2, Wood_Thickness = 0.0583,\
+    def __init__(self, Room, Width = 2.5, Length=1.25, Height=2.25, Material=materials.earth, Shelf_Number=2, Wood_Thickness = 0.0583,\
                  Position = [], Wood_Color = (1,.9,.5)):
         Furniture.__init__(self, Room, Width, Length, Height, Position)
         if Position == []:
             self.Pos = vector(0,0,0)
         else:
              self.Pos = Position
+        self.Material=Material
         self.Wood_Thickness = Wood_Thickness
         self.Shelf_Number = Shelf_Number
         self.Wood_Color = Wood_Color

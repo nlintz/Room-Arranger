@@ -1,16 +1,17 @@
 import sys
 from PySide.QtGui import QApplication, QMainWindow, QTextEdit, QPushButton
 from PySide import QtCore
-from RoomArrangerGui import Ui_RoomArranger
-from testing11 import *
+from RoomArrangerGui_Final import Ui_MainWindow
+from testing12 import *
 from threading import Thread
 from time import sleep
 
-class MainWindow(QMainWindow, Ui_RoomArranger):
+class MainWindow(QMainWindow, Ui_MainWindow):
     
 
-    def __init__(self, parent=None, room=DormRoom(),defaultsDict={}):
-        self.defaultsDict={'Microwave':[1.8,1,1], 'WallLight':[1], 'Poster':[2,2], 'Handle':[.5], 'Olin_Chair':[], 'Table':[3,3,2.5], 'Chair':[2,2,1.8], 'Refrigerator':[1.6,1.83,2.75], 'Bed':[3.17,7.17,2.83], 'Bookshelf':[2.5,1.25,2.25], 'Closet':[3,1.85,6.25], 'Lamp':[5], 'Desk':[2.5,5,2.5]}
+    def __init__(self, parent=None, room=LeftDormRoom(),defaultsDict={},materialsList=[], materialsListDict={}):
+        self.defaultsDict={'Microwave':[1.8,1,1], 'WallLight':[1], 'Poster':[2,2], 'Handle':[.5,materials.shiny], 'Olin_Chair':[], 'Table':[3,3,2.5,materials.wood], 'Chair':[2,2,1.8,materials.wood], 'Refrigerator':[1.6,1.83,2.75], 'Bed':[3.17,7.17,2.83,materials.wood], 'Bookshelf':[2.5,1.25,2.25,materials.wood], 'Closet':[3,1.85,6.25,materials.wood], 'Lamp':[5,materials.shiny], 'Desk':[2.5,5,2.5,materials.wood]}
+        self.materialsListDict={11:materials.wood,12:materials.rough,13:materials.marble,1:materials.plastic,2:materials.earth,3:materials.diffuse,4:materials.emissive,5:materials.unshaded,6:materials.shiny,7:materials.chrome,8:materials.blazed,10:materials.silver,9:materials.bricks}
         self.startingRoom = room
         room.walls_view()
         
@@ -72,6 +73,8 @@ class MainWindow(QMainWindow, Ui_RoomArranger):
         self.DeskLength.valueChanged.connect(self.changeDeskLength)
         self.DeskHeight.valueChanged.connect(self.changeDeskHeight)
 
+        self.MaterialBox.activated.connect(self.changeMaterial)
+
 
         def oscillate():
             while(True):
@@ -94,31 +97,31 @@ class MainWindow(QMainWindow, Ui_RoomArranger):
         p=Poster(self.startingRoom,self.defaultsDict['Poster'][0],self.defaultsDict['Poster'][1])
 
     def make_Handle(self):
-        h=Handle(self.startingRoom)
+        h=Handle(self.startingRoom,self.defaultsDict['Handle'][0],self.defaultsDict['Handle'][1])
 
     def make_Olin_Chair(self):
         oc=Olin_Chair(self.startingRoom)
 
     def make_Table(self):
-        t=Table(self.startingRoom,self.defaultsDict['Table'][0],self.defaultsDict['Table'][1],self.defaultsDict['Table'][2])
+        t=Table(self.startingRoom,self.defaultsDict['Table'][0],self.defaultsDict['Table'][1],self.defaultsDict['Table'][2],self.defaultsDict['Table'][3])
         
     def make_Chair(self):
-        c=Chair(self.startingRoom)
+        c=Chair(self.startingRoom,self.defaultsDict['Chair'][0],self.defaultsDict['Chair'][1],self.defaultsDict['Chair'][2],self.defaultsDict['Chair'][3])
         
     def make_Refrigerator(self):
-        r=Refrigerator(self.startingRoom)
+        r=Refrigerator(self.startingRoom,self.defaultsDict['Refrigerator'][0],self.defaultsDict['Refrigerator'][1],self.defaultsDict['Refrigerator'][2])
        
     def make_Bed(self):
-        b=Bed(self.startingRoom)
+        b=Bed(self.startingRoom,self.defaultsDict['Bed'][0],self.defaultsDict['Bed'][1],self.defaultsDict['Bed'][2],self.defaultsDict['Bed'][3])
     
     def make_Bookshelf(self):
-        bs = BookShelf(self.startingRoom)
+        bs = BookShelf(self.startingRoom,self.defaultsDict['Bookshelf'][0],self.defaultsDict['Bookshelf'][1],self.defaultsDict['Bookshelf'][2],self.defaultsDict['Bookshelf'][3])
 
     def make_Closet(self):
-       cl=Closet(self.startingRoom)
+       cl=Closet(self.startingRoom,self.defaultsDict['Closet'][0],self.defaultsDict['Closet'][1],self.defaultsDict['Closet'][2],self.defaultsDict['Closet'][3])
 
     def make_Lamp(self):
-        l=Lamp(self.startingRoom,self.defaultsDict['Table'][0])
+        l=Lamp(self.startingRoom,self.defaultsDict['Lamp'][0],self.defaultsDict['Lamp'][1])
 
 
     def changeTableWidth(self,decimal):
@@ -176,105 +179,219 @@ class MainWindow(QMainWindow, Ui_RoomArranger):
         else:
             pass
 
-    def changeHandleLength():
+    def changeHandleLength(self,decimal):
         if decimal>0:
             self.defaultsDict['Handle'][0]=decimal
         else:
             pass
 
-    def changeChairWidth():
+    def changeChairWidth(self,decimal):
         if decimal>0:
             self.defaultsDict['Chair'][0]=decimal
         else:
             pass
-    def changeChairLength():
+    def changeChairLength(self,decimal):
         if decimal>0:
             self.defaultsDict['Chair'][1]=decimal
         else:
             pass
-    def changeChairHeight():
+    def changeChairHeight(self,decimal):
         if decimal>0:
             self.defaultsDict['Chair'][2]=decimal
         else:
             pass
 
-    def changeRefrigeratorWidth():
+    def changeRefrigeratorWidth(self,decimal):
         if decimal>0:
             self.defaultsDict['Refrigerator'][0]=decimal
         else:
             pass
-    def changeRefrigeratorLength():
+    def changeRefrigeratorLength(self,decimal):
         if decimal>0:
             self.defaultsDict['Refrigerator'][1]=decimal
         else:
             pass
-    def changeRefrigeratorHeight():
+    def changeRefrigeratorHeight(self,decimal):
         if decimal>0:
             self.defaultsDict['Refrigerator'][2]=decimal
         else:
             pass
 
-    def changeBedWidth():
+    def changeBedWidth(self,decimal):
         if decimal>0:
             self.defaultsDict['Bed'][0]=decimal
         else:
             pass
-    def changeBedLength():
+    def changeBedLength(self,decimal):
         if decimal>0:
             self.defaultsDict['Bed'][1]=decimal
         else:
             pass
-    def changeBedHeight():
+    def changeBedHeight(self,decimal):
         if decimal>0:
             self.defaultsDict['Bed'][2]=decimal
         else:
             pass
 
-    def changeBookshelfWidth():
+    def changeBookshelfWidth(self,decimal):
         if decimal>0:
             self.defaultsDict['Bookshelf'][0]=decimal
         else:
             pass
-    def changeBookshelfLength():
+    def changeBookshelfLength(self,decimal):
         if decimal>0:
             self.defaultsDict['Bookshelf'][1]=decimal
         else:
             pass
-    def changeBookshelfHeight():
+    def changeBookshelfHeight(self,decimal):
         if decimal>0:
             self.defaultsDict['Bookshelf'][2]=decimal
         else:
             pass
 
-    def changeClosetWidth():
+    def changeClosetWidth(self,decimal):
         if decimal>0:
             self.defaultsDict['Closet'][0]=decimal
         else:
             pass
-    def changeClosetLength():
+    def changeClosetLength(self,decimal):
         if decimal>0:
             self.defaultsDict['Closet'][1]=decimal
         else:
             pass
-    def changeClosetHeight():
+    def changeClosetHeight(self,decimal):
         if decimal>0:
             self.defaultsDict['Closet'][2]=decimal
         else:
             pass
 
-    def changeDeskWidth():
+    def changeDeskWidth(self,decimal):
         if decimal>0:
             self.defaultsDict['Desk'][0]=decimal
         else:
             pass
-    def changeDeskLength():
+    def changeDeskLength(self,decimal):
         if decimal>0:
             self.defaultsDict['Desk'][1]=decimal
         else:
             pass
-    def changeDeskHeight():
+    def changeDeskHeight(self,decimal):
         if decimal>0:
             self.defaultsDict['Desk'][2]=decimal
+        else:
+            pass
+
+    def changeMaterial(self,material):
+        print 'signals work'
+        if material != 0:
+            if material == 1:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[1]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[1]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[1]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[1]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[1]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[1]
+                self.defaultsDict['Table'][3]=self.materialsListDict[1]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[1]
+            if material == 2:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[2]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[2]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[2]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[2]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[2]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[2]
+                self.defaultsDict['Table'][3]=self.materialsListDict[2]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[2]
+            if material == 3:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[3]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[3]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[3]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[3]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[3]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[3]
+                self.defaultsDict['Table'][3]=self.materialsListDict[3]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[3]
+            if material == 4:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[4]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[4]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[4]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[4]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[4]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[4]
+                self.defaultsDict['Table'][3]=self.materialsListDict[4]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[4]
+            if material == 5:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[5]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[5]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[5]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[5]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[5]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[5]
+                self.defaultsDict['Table'][3]=self.materialsListDict[5]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[5]
+            if material == 6:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[6]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[6]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[6]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[6]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[6]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[6]
+                self.defaultsDict['Table'][3]=self.materialsListDict[6]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[6]
+            if material == 7:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[7]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[7]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[7]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[7]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[7]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[7]
+                self.defaultsDict['Table'][3]=self.materialsListDict[7]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[7]
+            if material == 8:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[8]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[8]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[8]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[8]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[8]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[8]
+                self.defaultsDict['Table'][3]=self.materialsListDict[8]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[8]
+            if material == 9:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[9]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[9]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[9]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[9]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[9]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[9]
+                self.defaultsDict['Table'][3]=self.materialsListDict[9]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[9]
+            if material == 10:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[10]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[10]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[10]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[10]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[10]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[10]
+                self.defaultsDict['Table'][3]=self.materialsListDict[10]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[10]
+            if material == 11:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[11]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[11]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[11]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[11]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[11]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[11]
+                self.defaultsDict['Table'][3]=self.materialsListDict[11]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[11]
+            if material == 12:
+                self.defaultsDict['Bed'][3]=self.materialsListDict[12]
+                self.defaultsDict['Bookshelf'][3]=self.materialsListDict[12]
+                self.defaultsDict['Closet'][3]=self.materialsListDict[12]
+                self.defaultsDict['Handle'][1]=self.materialsListDict[12]
+                self.defaultsDict['Lamp'][1]=self.materialsListDict[12]
+                self.defaultsDict['Desk'][3]=self.materialsListDict[12]
+                self.defaultsDict['Table'][3]=self.materialsListDict[12]
+                self.defaultsDict['Chair'][3]=self.materialsListDict[12]       
         else:
             pass
 
@@ -283,6 +400,4 @@ if __name__ == '__main__':
     frame = MainWindow()
     frame.startingRoom.shouldRun = True
     frame.show()
-
     app.exec_()    
-
