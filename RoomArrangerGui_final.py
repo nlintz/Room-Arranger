@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Gui5.ui'
 #
-# Created: Wed May  9 22:41:43 2012
+# Created: Wed May  9 22:40:58 2012
 #      by: pyside-uic 0.2.13 running on PySide 1.1.0
 #
 # WARNING! All changes made in this file will be lost!
