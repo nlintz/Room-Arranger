@@ -38,8 +38,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.PosterWidth.valueChanged.connect(self.changePosterWidth)
         self.PosterLength.valueChanged.connect(self.changePosterLength)
 
-        self.HandleButton.clicked.connect(self.make_Handle)
-        self.HandleLength.valueChanged.connect(self.changeHandleLength)
 
         self.OlinChairButton.clicked.connect(self.make_Olin_Chair)
 
@@ -282,7 +280,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
     def changeMaterial(self,material):
-        print 'signals work'
         if material != 0:
             if material == 1:
                 self.defaultsDict['Bed'][3]=self.materialsListDict[1]
