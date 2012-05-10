@@ -773,13 +773,16 @@ class WallLight(Furniture):
 
 class Olin_Chair(Furniture):
     def __init__(self, Room, Number_Of_Legs = 5, Starting_Leg_Width = 1.7/12, Ending_Leg_Width = 1.9/12,
-                 Leg_Length = 1, Starting_Leg_Height = 1.4/12, Ending_Leg_Height = 2.2/12, Wheel_Width = 2.1/12,
+                 Leg_Length = 1., Starting_Leg_Height = 1.4/12, Ending_Leg_Height = 2.2/12, Wheel_Width = 2.1/12,
                  Wheel_Radius = 1.1/12, Wheel_Margin = 0.25/12, Spindle_Bottom_Height = 5.7/12,
                  Spindle_Middle_Height = 1.1/12, Spindle_Top_Height = 5.3/12, Spindle_Bottom_Radius =1.4/12,
                  Spindle_Middle_Radius = 1.1/12, Spindle_Top_Radius = 0.55/12, Arm_Rail_Thickness = 1.5/12,
                  Arm_Rail_Width = 0.8/12, Arm_Rail_Offset = 2.3/12, Arm_X_Extend = 9./12,
                  Arm_Curve_Radius = 2./12, Arm_Y_Extend = 7.5/12, Arm_Rest_Width = 3.8/12,
-                 Arm_Rest_Length = 10./12, Arm_Rest_Thickness = 1.2/12, Position = []):
+                 Arm_Rest_Length = 10./12, Arm_Rest_Thickness = 1.2/12, Inner_Seat_Length = 13/12.,
+                 Inner_Seat_Bulge_Length = 3./12, Inner_Seat_Hmax = 3./12, Inner_Seat_Hmin = 2./12,
+                 Inner_Seat_Width= 1., Back_Seat_Height = 16./12, Back_Seat_Thickness = 1.5/12,
+                 Back_Seat_Width = 17./12, Position = []):
         Furniture.__init__(self, Room, 1,1,1, Position)
         self.Number_Of_Legs = Number_Of_Legs
         self.Starting_Leg_Width = Starting_Leg_Width
@@ -805,10 +808,18 @@ class Olin_Chair(Furniture):
         self.Arm_Rest_Width = Arm_Rest_Width
         self.Arm_Rest_Length = Arm_Rest_Length
         self.Arm_Rest_Thickness = Arm_Rest_Thickness
+        self.Inner_Seat_Length = Inner_Seat_Length
+        self.Inner_Seat_Bulge_Length = Inner_Seat_Bulge_Length
+        self.Inner_Seat_Hmax = Inner_Seat_Hmax
+        self.Inner_Seat_Hmin = Inner_Seat_Hmin
+        self.Inner_Seat_Width = Inner_Seat_Width
+        self.Back_Seat_Height = Back_Seat_Height
+        self.Back_Seat_Thickness = Back_Seat_Thickness
+        self.Back_Seat_Width = Back_Seat_Width
         self.X_Scale = Ending_Leg_Width/Starting_Leg_Width
         self.Y_Scale = Ending_Leg_Height/Starting_Leg_Height
         self.Leg_Angle = (2*math.pi)/self.Number_Of_Legs
-        
+    
         self.Spindle_Bottom = cylinder(pos = (0,0,0), axis = (0,0,self.Spindle_Bottom_Height),
                                        radius = self.Spindle_Bottom_Radius,
                                        material = materials.plastic,
@@ -830,8 +841,63 @@ class Olin_Chair(Furniture):
                                   self.Spindle_Top_Height)
         self.BoundingBoxBottom = cylinder(axis = (0,0,-2*self.Starting_Leg_Height-self.Wheel_Margin),
                                           radius = self.Leg_Length+self.Wheel_Radius+self.Wheel_Margin,
-                                          visible = False, frame = self.Container)
-        self.ObjectList = [self.Spindle_Bottom, self.Spindle_Middle, self.Spindle_Top,self.BoundingBoxBottom]
+                                          visible = False)
+        self.Inner_Seat_Rectangle1 = shapes.rectangle(height = self.Inner_Seat_Length,
+                                                      width = self.Inner_Seat_Hmin)
+        self.Inner_Seat_Circle1 = shapes.circle(radius = self.Inner_Seat_Bulge_Length,
+                                                pos = ((((self.Inner_Seat_Hmin/2)+(self.Inner_Seat_Hmax-
+                                                                                  self.Inner_Seat_Hmin))-
+                                                        self.Inner_Seat_Bulge_Length),
+                                                       -((math.sqrt((self.Inner_Seat_Bulge_Length)**2-
+                                                                   (self.Inner_Seat_Hmax-(self.Inner_Seat_Hmin/2))**2
+                                                                   ))+(self.Inner_Seat_Length/2))))
+        self.Inner_Seat_Chopping_Rectangle = shapes.rectangle(pos = (-((self.Inner_Seat_Hmin/2)+
+                                                                       self.Inner_Seat_Length), 0),
+                                                              height = 2*self.Inner_Seat_Length,
+                                                              width = 2*self.Inner_Seat_Length)
+
+        self.Remainder_Width = ((math.sqrt((self.Inner_Seat_Bulge_Length)**2-
+                                                                   (self.Inner_Seat_Hmax-(self.Inner_Seat_Hmin/2))**2)))
+                                                          
+        self.Inner_Seat_Rectangle2 = shapes.rectangle(width = (self.Inner_Seat_Hmax-self.Inner_Seat_Hmin),
+                                                      height = (self.Inner_Seat_Length - self.Remainder_Width),
+                                                      pos = ((self.Inner_Seat_Hmin/2.)+((self.Inner_Seat_Hmax-self.Inner_Seat_Hmin)/2)
+                                                             , -(self.Remainder_Width/2.)))
+        
+        self.Rectangle_Width = (self.Inner_Seat_Hmax-self.Inner_Seat_Hmin)
+        
+        self.Rectangle_Height = (self.Inner_Seat_Length - self.Remainder_Width)
+
+        self.Radius_Numerator = sqrt(self.Rectangle_Width**2+self.Rectangle_Height**2)
+        
+        self.Big_Circle_Radius = self.Radius_Numerator/(math.cos((math.pi/2)-math.atan(self.Rectangle_Height/
+                                                                                       self.Rectangle_Width)))
+        
+        self.Inner_Seat_Circle2 = shapes.circle(pos = ((self.Big_Circle_Radius),0),
+                                                radius = self.Big_Circle_Radius)
+
+        self.Inner_Seat_Shape = (((self.Inner_Seat_Rectangle1+self.Inner_Seat_Circle1)-self.Inner_Seat_Chopping_Rectangle)+
+                                 self.Inner_Seat_Rectangle2)-self.Inner_Seat_Circle2
+
+        self.Cushion_Start = vector(-self.Inner_Seat_Width/2., 0, self.Spindle_Bottom_Height+self.Spindle_Middle_Height+
+                                  self.Spindle_Top_Height+self.Inner_Seat_Hmin)
+
+        self.Cushion_End = self.Cushion_Start+vector(self.Inner_Seat_Width, 0 ,0)
+
+        self.Inner_Seat = extrusion(shape = self.Inner_Seat_Shape, pos = [(self.Cushion_Start), (self.Cushion_End)],
+                                    frame = self.Container, material = materials.wood)
+
+        self.Back_Shape = shapes.arc(radius = (12*self.Back_Seat_Height/math.pi), angle1 = -(5*math.pi)/8  , angle2 =-math.pi/2,
+                                     thickness = self.Back_Seat_Thickness)
+        self.Spindle_Height = (self.Spindle_Bottom_Height+self.Spindle_Middle_Height+
+                                  self.Spindle_Top_Height+self.Inner_Seat_Hmin)
+        self.Back_Path = [(-self.Back_Seat_Width/2, 13*self.Back_Seat_Height/math.pi, 2.75*self.Spindle_Height ),
+                          (self.Back_Seat_Width/2, 13*self.Back_Seat_Height/math.pi, 2.75*self.Spindle_Height)]
+
+        self.Back = extrusion(shape = self.Back_Shape, pos = self.Back_Path, frame = self.Container, material = materials.wood)
+                                 
+        self.ObjectList = [self.Spindle_Bottom, self.Spindle_Middle, self.Spindle_Top,self.BoundingBoxBottom,
+                           self.Inner_Seat]
 
         for x in range(0,2):
             if x == 0:
@@ -843,6 +909,9 @@ class Olin_Chair(Furniture):
                                           shape = self.Rail_Shape,
                                           material = materials.earth,
                                           frame = self.Container))
+            self.ObjectList.append(cylinder(opacity = 0, pos = self.Rail_Origin,
+                                            axis = (multiplier*self.Arm_X_Extend,0,0),
+                                            radius = self.Arm_Rail_Width))
             Next_Origin = vector((self.Rail_Origin+(multiplier*self.Arm_X_Extend,0,self.Arm_Curve_Radius)))
             Curve_Path = paths.arc(pos = Next_Origin, radius = self.Arm_Curve_Radius,
                                    angle1 = (math.pi/2)+(x*(math.pi/2)), angle2 = 0+(x*(math.pi/2)))
