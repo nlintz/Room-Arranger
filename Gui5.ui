@@ -7,20 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>724</height>
+    <height>748</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
       <width>633</width>
-      <height>633</height>
+      <height>665</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -372,6 +372,32 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Poster Type</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="PosterBox">
+             <item>
+              <property name="text">
+               <string>Meta Cube</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Matt Huang Consulting</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Flower Poster</string>
+              </property>
+             </item>
+            </widget>
+           </item>
           </layout>
          </item>
          <item row="1" column="2">
@@ -646,21 +672,21 @@
      </item>
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="4" column="2">
+       <item row="6" column="2">
         <widget class="QLabel" name="label_40">
          <property name="text">
           <string>Move item horizontally/rotate view</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="2">
+       <item row="9" column="2">
         <widget class="QLabel" name="label_43">
          <property name="text">
           <string>Rotate Item</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="2">
+       <item row="7" column="2">
         <widget class="QLabel" name="label_41">
          <property name="text">
           <string>Snap to View</string>
@@ -674,14 +700,14 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
+       <item row="4" column="2">
         <widget class="QLabel" name="label">
          <property name="text">
           <string>Snap selected/all item(s) to grid</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="2">
+       <item row="8" column="2">
         <widget class="QLabel" name="label_42">
          <property name="text">
           <string>Move Item</string>
@@ -695,49 +721,49 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="6" column="1">
         <widget class="QLabel" name="label_17">
          <property name="text">
           <string>Arrow (Item Selected/No Item Selected)</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="2">
+       <item row="5" column="2">
         <widget class="QLabel" name="label_39">
          <property name="text">
           <string>Move selected item/all items to the floor</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="5" column="1">
         <widget class="QLabel" name="label_8">
          <property name="text">
           <string>G (Item Selected/No Item Selected)</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
+       <item row="9" column="1">
         <widget class="QLabel" name="label_38">
          <property name="text">
           <string>Alt+Click+Drag</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="7" column="1">
         <widget class="QLabel" name="label_33">
          <property name="text">
           <string>1,2,3,4,5</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="4" column="1">
         <widget class="QLabel" name="label_15">
          <property name="text">
           <string>S (Item Selected/No Item Selected)</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
+       <item row="8" column="1">
         <widget class="QLabel" name="label_16">
          <property name="text">
           <string>Click+Drag</string>
@@ -751,15 +777,40 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_44">
+         <property name="text">
+          <string>Right Click</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="label_45">
+         <property name="text">
+          <string>Rotate Window</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_46">
+         <property name="text">
+          <string>Middle Click</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="label_47">
+         <property name="text">
+          <string>Zoom</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
    </widget>
    <zorder>layoutWidget</zorder>
-   <zorder>gridLayoutWidget</zorder>
-   <zorder>RefrigeratorButton</zorder>
-   <zorder>label</zorder>
-   <zorder>gridLayoutWidget_2</zorder>
+   <zorder></zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
