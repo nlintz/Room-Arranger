@@ -1,7 +1,7 @@
 import sys
 from PySide.QtGui import QApplication, QMainWindow, QTextEdit, QPushButton
 from PySide import QtCore
-from RoomArrangerGui_Final import Ui_MainWindow
+from RoomArrangerGui_final import Ui_MainWindow
 from testing12 import *
 from threading import Thread
 from time import sleep
@@ -9,9 +9,10 @@ from time import sleep
 class MainWindow(QMainWindow, Ui_MainWindow):
     
 
-    def __init__(self, parent=None, room=LeftDormRoom(),defaultsDict={},materialsList=[], materialsListDict={}):
-        self.defaultsDict={'Microwave':[1.8,1,1], 'WallLight':[1], 'Poster':[2,2], 'Handle':[.5,materials.shiny], 'Olin_Chair':[], 'Table':[3,3,2.5,materials.wood], 'Chair':[2,2,1.8,materials.wood], 'Refrigerator':[1.6,1.83,2.75], 'Bed':[3.17,7.17,2.83,materials.wood], 'Bookshelf':[2.5,1.25,2.25,materials.wood], 'Closet':[3,1.85,6.25,materials.wood], 'Lamp':[5,materials.shiny], 'Desk':[2.5,5,2.5,materials.wood]}
+    def __init__(self, parent=None, room=LeftDormRoom(),defaultsDict={},materialsList=[], materialsListDict={}, posterDict={}):
+        self.defaultsDict={'Microwave':[1.8,1,1], 'WallLight':[1], 'Poster':[2,2,'metacubeposter'], 'Handle':[.5,materials.shiny], 'Olin_Chair':[], 'Table':[3,3,2.5,materials.wood], 'Chair':[2,2,1.8,materials.wood], 'Refrigerator':[1.6,1.83,2.75], 'Bed':[3.17,7.17,2.83,materials.wood], 'Bookshelf':[2.5,1.25,2.25,materials.wood], 'Closet':[3,1.85,6.25,materials.wood], 'Lamp':[5,materials.shiny], 'Desk':[2.5,5,2.5,materials.wood]}
         self.materialsListDict={11:materials.wood,12:materials.rough,13:materials.marble,1:materials.plastic,2:materials.earth,3:materials.diffuse,4:materials.emissive,5:materials.unshaded,6:materials.shiny,7:materials.chrome,8:materials.blazed,10:materials.silver,9:materials.bricks}
+        self.posterDict={0:'metacubeposter',1:'mhcposter',2:'flowerposter'}
         self.startingRoom = room
         room.walls_view()
         
@@ -73,6 +74,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.MaterialBox.activated.connect(self.changeMaterial)
 
+        self.PosterBox.activated.connect(self.changePoster)
+
 
         def oscillate():
             while(True):
@@ -92,10 +95,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         d=Desk(self.startingRoom)
 
     def make_Poster(self):
-        p=Poster(self.startingRoom,self.defaultsDict['Poster'][0],self.defaultsDict['Poster'][1])
-
-    def make_Handle(self):
-        h=Handle(self.startingRoom,self.defaultsDict['Handle'][0],self.defaultsDict['Handle'][1])
+        p=Poster(self.startingRoom,self.defaultsDict['Poster'][0],self.defaultsDict['Poster'][1],self.defaultsDict['Poster'][2])
 
     def make_Olin_Chair(self):
         oc=Olin_Chair(self.startingRoom)
@@ -174,12 +174,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def changePosterLength(self,decimal):
         if decimal>0:
             self.defaultsDict['WallLight'][0]=decimal
-        else:
-            pass
-
-    def changeHandleLength(self,decimal):
-        if decimal>0:
-            self.defaultsDict['Handle'][0]=decimal
         else:
             pass
 
@@ -392,6 +386,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             pass
 
+    def changePoster(self,poster_string):
+        print poster_string
+        if poster_string == 0:
+            self.defaultsDict['Poster'][2]=self.posterDict[0]
+        if poster_string == 1:
+            self.defaultsDict['Poster'][2]=self.posterDict[1]
+        if poster_string == 2:
+            self.defaultsDict['Poster'][2]=self.posterDict[2]
+            
+            
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     frame = MainWindow()
