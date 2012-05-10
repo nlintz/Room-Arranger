@@ -673,8 +673,9 @@ class Desk(Furniture):
         self.ObjectList = [self.CounterTop, self.DeskDrawers, self.Leg]
 
 class Poster(Furniture):
-    def __init__(self, Room, Length, Height, Width = 0.01, Position = [.05,.05,5]):
-        posterdata = materials.loadTGA(posterimage)
+    def __init__(self, Room, Length, Height, posterstring, Width = 0.01, Position = [.05,.05,5]):
+
+        posterdata = materials.loadTGA(posterstring)
         postertex = materials.texture(data = posterdata, mapping="sign")
         Furniture.__init__(self, Room, Width, Length, Height, Position)
         self.Sheet = box(axis=(1,0,0), pos = (self.Pos), size = (self.Width, self.Length, self.Height),
