@@ -168,12 +168,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def changePosterWidth(self,decimal):
         if decimal>0:
-            self.defaultsDict['WallLight'][0]=decimal
+            self.defaultsDict['Poster'][0]=decimal
         else:
             pass
     def changePosterLength(self,decimal):
         if decimal>0:
-            self.defaultsDict['WallLight'][0]=decimal
+            self.defaultsDict['Poster'][0]=decimal
         else:
             pass
 
