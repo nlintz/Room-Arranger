@@ -195,6 +195,12 @@ class Room(object):
             if k=='g':
                 if self.Selected:
                     self.Selected.gravity(self.ObjectList[0].ObjectList[0])
+                else:
+                    for thing in self.ObjectList[1:]:
+                        thing.gravity(self.ObjectList[0].ObjectList[0])
+            if k=='delete':
+                if self.Selected:
+                    self.Selected.delete()
         for thing in self.ObjectList[1:]: #if an object is picked, or is currently being dragged or turned, call drag (currently a little buggy - try it out and you'll see what i mean)
             picked= False
             for part in thing.ObjectList:
@@ -442,9 +448,11 @@ class Furniture:
                           self.Container.pos.z- Grid_Z*self.Grid_Resolution,)
         self.Container.pos -= Move_Pos
         self.picked = False
-                        
-                    
 
+    def delete(self):
+        for thing in self.ObjectList:
+            thing.visible = False
+                        
 
 class Refrigerator(Furniture):
     def __init__(self, Room, Width=1.63, Length=1.83, Height=2.75, Position = [0,1,0]):
